@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-black text-white;
+  }
+}
+
+/* Container Queries Support */
+@container (min-width: 480px) {
+  .@[480px]\:gap-8 {
+    gap: 2rem;
+  }
+  
+  .@[480px]\:h-auto {
+    height: auto;
+  }
+  
+  .@[480px]\:min-w-\[400px\] {
+    min-width: 400px;
+  }
+  
+  .@[480px]\:text-5xl {
+    font-size: 3rem;
+  }
+  
+  .@[480px]\:font-black {
+    font-weight: 900;
+  }
+  
+  .@[480px]\:leading-tight {
+    line-height: 1.25;
+  }
+  
+  .@[480px]\:tracking-\[-0\.033em\] {
+    letter-spacing: -0.033em;
+  }
+  
+  .@[480px]\:text-base {
+    font-size: 1rem;
+  }
+  
+  .@[480px]\:font-normal {
+    font-weight: 400;
+  }
+  
+  .@[480px]\:leading-normal {
+    line-height: 1.5;
+  }
+  
+  .@[480px]\:h-12 {
+    height: 3rem;
+  }
+  
+  .@[480px]\:px-5 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@container (min-width: 864px) {
+  .@[864px]\:flex-row {
+    flex-direction: row;
+  }
+  
+  .@[864px]\:w-full {
+    width: 100%;
+  }
+  
+  .@[864px]\:justify-center {
+    justify-content: center;
+  }
+}
