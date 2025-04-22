@@ -7,19 +7,26 @@ const SkillsSection = () => {
   };
 
   return (
-    <section id="skills" className="mb-8">
-      <h2 className="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">Skills &amp; Expertise</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <section id="skills" className="py-12">
+      <h2 className="text-white text-2xl font-bold mb-6">Skills &amp; Expertise</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {skills.map((skill) => (
           <div 
             key={skill.id} 
-            className="flex flex-1 gap-3 rounded-lg border border-[#434343] bg-black p-4 items-center hover:bg-[#111111] transition-colors cursor-pointer"
+            className="flex gap-4 rounded-lg border border-[#333333] bg-black/30 p-5 items-center hover:bg-black/50 transition-colors cursor-pointer"
             onClick={() => handleSkillClick(skill.id)}
           >
-            <div className="text-[#FFFFFF]">
+            <div className="text-white flex items-center justify-center min-w-[40px]">
               <span dangerouslySetInnerHTML={{ __html: skill.icon }} />
             </div>
-            <h3 className="text-[#FFFFFF] text-base font-bold leading-tight">{skill.name}</h3>
+            <div className="flex-1">
+              <h3 className="text-white text-lg font-semibold mb-1">{skill.name}</h3>
+              <p className="text-gray-400 text-sm">
+                {skill.id === "wordpress" && "Expert in custom theme development & plugins"}
+                {skill.id === "seo" && "Implementing best practices for high rankings"}
+                {skill.id === "content" && "Creating engaging and conversion-focused content"}
+              </p>
+            </div>
           </div>
         ))}
       </div>

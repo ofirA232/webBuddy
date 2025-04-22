@@ -14,9 +14,9 @@ const ProjectsSection = () => {
   };
 
   return (
-    <section id="projects" className="mb-8">
-      <h2 className="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em] pb-3 pt-5">Selected Projects</h2>
-      <div className="relative px-4">
+    <section id="projects" className="py-12">
+      <h2 className="text-white text-2xl font-bold mb-6">Selected Projects</h2>
+      <div className="relative">
         <Carousel
           opts={{
             align: "start",
@@ -24,25 +24,33 @@ const ProjectsSection = () => {
           }}
           className="w-full"
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-2 md:-ml-4">
             {projects.map((project) => (
-              <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={project.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
                 <div
-                  className="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-video cursor-pointer hover:shadow-lg transition-shadow h-full"
-                  style={{ backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%), url("${project.imageUrl}")` }}
+                  className="bg-cover bg-center flex flex-col rounded-xl overflow-hidden cursor-pointer hover:shadow-lg transition-shadow h-full"
                   onClick={() => handleProjectClick(project.id)}
                 >
-                  <div className="space-y-1">
-                    <h3 className="text-white text-base font-bold leading-tight line-clamp-2">{project.title}</h3>
-                    <p className="text-white text-xs opacity-80 line-clamp-2">{project.description}</p>
+                  <div 
+                    className="h-48 w-full bg-cover bg-center" 
+                    style={{ backgroundImage: `url("${project.imageUrl}")` }}
+                  ></div>
+                  <div className="p-4 bg-gradient-to-t from-black to-black/70 flex-1">
+                    <h3 className="text-white text-lg font-bold mb-2">{project.title}</h3>
+                    <p className="text-white/80 text-sm">{project.description}</p>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 border-0" />
-          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 border-0" />
+          <div className="hidden sm:block">
+            <CarouselPrevious className="absolute -left-4 md:-left-5 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 border-0" />
+            <CarouselNext className="absolute -right-4 md:-right-5 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 border-0" />
+          </div>
         </Carousel>
+        <div className="flex justify-center mt-4 sm:hidden">
+          <div className="text-xs text-white/60">Swipe to view more projects</div>
+        </div>
       </div>
     </section>
   );
