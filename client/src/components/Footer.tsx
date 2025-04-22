@@ -8,7 +8,7 @@ const Footer = () => {
     <footer className="border-t border-[#333333] py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-white text-sm">© {new Date().getFullYear()} Alex Reed. All rights reserved.</div>
+          <div className="text-white text-sm">© {new Date().getFullYear()} Ofir Zangi. All rights reserved.</div>
           <div className="flex flex-wrap gap-6">
             <a 
               className="text-white text-sm hover:text-gray-300 transition-colors" 

@@ -6,9 +6,9 @@ const Header = () => {
   
   const handleSocialLink = (platform: string) => {
     const urls: Record<string, string> = {
-      github: "https://github.com/alexreed",
-      twitter: "https://twitter.com/alexreed",
-      linkedin: "https://www.linkedin.com/in/alexreed",
+      github: "https://github.com/ofirzangi",
+      twitter: "https://twitter.com/ofirzangi",
+      linkedin: "https://www.linkedin.com/in/ofirzangi",
     };
     
     if (urls[platform]) {
@@ -41,7 +41,7 @@ const Header = () => {
                 ></path>
               </svg>
             </div>
-            <h2 className="text-white text-lg font-bold">Alex Reed</h2>
+            <h2 className="text-white text-lg font-bold">Ofir Zangi</h2>
           </div>
           
           {/* Desktop Navigation */}

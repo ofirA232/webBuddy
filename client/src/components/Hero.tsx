@@ -17,7 +17,7 @@ const Hero = () => {
               backgroundImage:
                 'url("https://cdn.usegalileo.ai/sdxl10/46abb76b-de61-4219-850b-d588e74ea23e.png")',
             }}
-            aria-label="Profile photo of Alex Reed"
+            aria-label="Profile photo of Ofir Zangi"
           ></div>
         </div>
         
@@ -25,7 +25,7 @@ const Hero = () => {
         <div className="flex flex-col justify-center gap-6">
           <div className="flex flex-col gap-4">
             <h1 className="text-white text-4xl md:text-5xl font-black leading-tight tracking-tight">
-              Alex Reed
+              Ofir Zangi
             </h1>
             <p className="text-white text-sm md:text-base font-normal leading-relaxed">
               I'm a digital manager specializing in crafting exceptional
