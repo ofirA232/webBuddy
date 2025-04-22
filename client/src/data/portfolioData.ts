@@ -1,21 +1,33 @@
 export const projects = [
   {
     id: 1,
-    title: "EcoGlo",
+    title: "Pelecard Website",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/92b3ef47-a879-4cda-a3c6-08eb2ec2faa3.png",
-    description: "A sustainable energy company website with interactive dashboard for tracking energy savings."
+    description: "A corporate website for payment solutions provider with modern design and user-friendly interface."
   },
   {
     id: 2,
-    title: "TechTrend",
+    title: "Knowledge Center",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
-    description: "An e-commerce platform for the latest tech gadgets with focus on user experience."
+    description: "A comprehensive documentation platform with searchable resources and interactive guides."
   },
   {
     id: 3,
-    title: "DesignHaven",
+    title: "Dev Portal",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/d3cf5e9a-31a1-45f0-b08c-38dfe9c421b7.png",
-    description: "A portfolio website for a creative design agency showcasing their work."
+    description: "A developer hub featuring API documentation, code examples, and implementation tutorials."
+  },
+  {
+    id: 4,
+    title: "WatchyWatch",
+    imageUrl: "https://cdn.usegalileo.ai/sdxl10/92b3ef47-a879-4cda-a3c6-08eb2ec2faa3.png",
+    description: "A streaming platform for curated video content with personalized recommendations."
+  },
+  {
+    id: 5,
+    title: "Tripy",
+    imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
+    description: "A travel planning application with itinerary builder and destination guides."
   }
 ];
 
