@@ -1,8 +1,10 @@
+import pelecardImage from "../assets/pelecard-website.png";
+
 export const projects = [
   {
     id: 1,
     title: "Pelecard Website",
-    imageUrl: "https://cdn.usegalileo.ai/sdxl10/92b3ef47-a879-4cda-a3c6-08eb2ec2faa3.png",
+    imageUrl: pelecardImage,
     description: "A corporate website for payment solutions provider with modern design and user-friendly interface."
   },
   {
