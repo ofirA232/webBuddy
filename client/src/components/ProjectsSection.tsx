@@ -31,10 +31,13 @@ const ProjectsSection = () => {
                   className="bg-cover bg-center flex flex-col rounded-xl overflow-hidden cursor-pointer hover:shadow-lg transition-shadow h-full"
                   onClick={() => handleProjectClick(project.id)}
                 >
-                  <div 
-                    className="h-48 w-full bg-cover bg-center" 
-                    style={{ backgroundImage: `url("${project.imageUrl}")` }}
-                  ></div>
+                  <div className="h-48 w-full overflow-hidden">
+                    <img 
+                      src={project.imageUrl} 
+                      alt={project.title}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
                   <div className="p-4 bg-gradient-to-t from-black to-black/70 flex-1">
                     <h3 className="text-white text-lg font-bold mb-2">{project.title}</h3>
                     <p className="text-white/80 text-sm">{project.description}</p>
