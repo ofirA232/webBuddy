@@ -20,7 +20,7 @@ const ProjectsSection = () => {
 
   return (
     <section id="projects" className="py-12">
-      <h2 className="text-white text-2xl font-bold mb-6">Selected Projects</h2>
+      <h2 className="text-white text-2xl font-bold mb-6 text-right" dir="rtl">פרויקטים נבחרים</h2>
       <div className="relative">
         <Carousel
           opts={{
@@ -43,7 +43,7 @@ const ProjectsSection = () => {
                       className="w-full h-full object-cover object-center"
                     />
                   </div>
-                  <div className="p-4 bg-gradient-to-t from-black to-black/70 flex-1">
+                  <div className="p-4 bg-gradient-to-t from-black to-black/70 flex-1 text-right" dir="rtl">
                     <h3 className="text-white text-lg font-bold mb-2">{project.title}</h3>
                     <p className="text-white/80 text-sm">{project.description}</p>
                   </div>
@@ -57,7 +57,7 @@ const ProjectsSection = () => {
           </div>
         </Carousel>
         <div className="flex justify-center mt-4 sm:hidden">
-          <div className="text-xs text-white/60">Swipe to view more projects</div>
+          <div className="text-xs text-white/60">החלק לצפייה בפרויקטים נוספים</div>
         </div>
       </div>
     </section>
