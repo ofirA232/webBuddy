@@ -1,4 +1,5 @@
 import { projects } from "@/data/portfolioData";
+import { useLocation } from "wouter";
 import {
   Carousel,
   CarouselContent,
@@ -8,9 +9,13 @@ import {
 } from "@/components/ui/carousel";
 
 const ProjectsSection = () => {
+  const [, setLocation] = useLocation();
+  
   const handleProjectClick = (id: number) => {
-    // In a real application, this would navigate to a project detail page
-    console.log(`Viewing project ${id} details`);
+    const project = projects.find(p => p.id === id);
+    if (project) {
+      setLocation(`/project/${project.slug}`);
+    }
   };
 
   return (

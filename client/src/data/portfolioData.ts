@@ -1,35 +1,105 @@
 import pelecardImage from "../assets/pelecard-website.png";
 
-export const projects = [
+export interface Project {
+  id: number;
+  title: string;
+  slug: string;
+  imageUrl: string;
+  description: string;
+  fullDescription?: string;
+  technologies?: string[];
+  features?: string[];
+  role?: string;
+  demoUrl?: string;
+  githubUrl?: string;
+}
+
+export const projects: Project[] = [
   {
     id: 1,
     title: "Pelecard Website",
+    slug: "pelecard-website",
     imageUrl: pelecardImage,
-    description: "A corporate website for payment solutions provider with modern design and user-friendly interface."
+    description: "A corporate website for payment solutions provider with modern design and user-friendly interface.",
+    fullDescription: "פלקארד היא חברה מובילה בתחום פתרונות התשלום באינטרנט בישראל. עבדתי על עיצוב מחדש של האתר הראשי שלהם, תוך יצירת חווית משתמש נקייה ומשופרת. האתר החדש מדגיש את המוצרים והשירותים העיקריים של החברה ומשפר את הנגישות למידע חשוב עבור לקוחות פוטנציאליים וקיימים.",
+    technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design"],
+    features: [
+      "ממשק משתמש דו-לשוני (עברית ואנגלית)",
+      "אינטגרציה של מערכת תשלומים",
+      "טפסי יצירת קשר מותאמים אישית",
+      "חיפוש מתקדם",
+      "התאמה למובייל"
+    ],
+    role: "מנהל פרויקט, מפתח ראשי",
+    demoUrl: "https://www.pelecard.com"
   },
   {
     id: 2,
     title: "Knowledge Center",
+    slug: "knowledge-center",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
-    description: "A comprehensive documentation platform with searchable resources and interactive guides."
+    description: "A comprehensive documentation platform with searchable resources and interactive guides.",
+    fullDescription: "מרכז הידע הוא פלטפורמה מקיפה המאחדת את כל המשאבים, המדריכים והתיעוד של החברה במקום אחד. הפלטפורמה כוללת מערכת חיפוש חכמה, קטגוריות ברורות, ותוכן אינטראקטיבי שעוזר למשתמשים למצוא בדיוק את המידע שהם מחפשים.",
+    technologies: ["React", "Node.js", "Algolia Search", "Markdown", "MongoDB"],
+    features: [
+      "חיפוש מהיר ומדויק",
+      "קטגוריות מובנות",
+      "מדריכים אינטראקטיביים",
+      "אפשרות להגיב ולדרג תוכן",
+      "תצוגת מובייל מותאמת"
+    ],
+    role: "מפתח Full-Stack, מעצב UX"
   },
   {
     id: 3,
     title: "Dev Portal",
+    slug: "dev-portal",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/d3cf5e9a-31a1-45f0-b08c-38dfe9c421b7.png",
-    description: "A developer hub featuring API documentation, code examples, and implementation tutorials."
+    description: "A developer hub featuring API documentation, code examples, and implementation tutorials.",
+    fullDescription: "פורטל המפתחים הוא פלטפורמה ייעודית למפתחים המשתמשים ב-API של החברה. הפורטל כולל תיעוד מפורט, דוגמאות קוד, סביבת בדיקות אינטראקטיבית, ופורומים לשאלות ותמיכה. הפרויקט נבנה במטרה לשפר את חווית המפתח ולהאיץ את הזמן לשוק של אינטגרציות.",
+    technologies: ["React", "TypeScript", "Swagger", "OAuth", "GraphQL"],
+    features: [
+      "תיעוד API אינטראקטיבי",
+      "סביבת בדיקות מובנית",
+      "דוגמאות קוד בשפות שונות",
+      "מדריכי הטמעה מפורטים",
+      "פורום תמיכה למפתחים"
+    ],
+    role: "מפתח Frontend, מומחה API"
   },
   {
     id: 4,
     title: "WatchyWatch",
+    slug: "watchy-watch",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/92b3ef47-a879-4cda-a3c6-08eb2ec2faa3.png",
-    description: "A streaming platform for curated video content with personalized recommendations."
+    description: "A streaming platform for curated video content with personalized recommendations.",
+    fullDescription: "WatchyWatch היא פלטפורמת סטרימינג המציעה תוכן וידאו מקורי וקורטד. הפלטפורמה כוללת מנוע המלצות מתקדם המבוסס על בינה מלאכותית, המותאם אישית להעדפות הצפייה של כל משתמש. הפרויקט כלל פיתוח מקיף של צד שרת וצד לקוח, כולל טיפול באתגרים של סטרימינג וידאו בזמן אמת.",
+    technologies: ["Vue.js", "Python", "Django", "AWS", "Machine Learning"],
+    features: [
+      "מנוע המלצות אישי",
+      "סטרימינג באיכות גבוהה",
+      "חיפוש מתקדם לפי ז'אנרים וקטגוריות",
+      "אפשרות יצירת רשימות צפייה",
+      "מעקב אחרי היסטוריית צפייה"
+    ],
+    role: "ארכיטקט מערכת, מפתח Backend"
   },
   {
     id: 5,
     title: "Tripy",
+    slug: "tripy",
     imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
-    description: "A travel planning application with itinerary builder and destination guides."
+    description: "A travel planning application with itinerary builder and destination guides.",
+    fullDescription: "Tripy הוא אפליקציית תכנון טיולים המאפשרת למשתמשים ליצור מסלולי טיול מותאמים אישית. האפליקציה כוללת מידע מקיף על יעדים, אטרקציות, מסעדות ומלונות, וכן כלי תכנון אינטראקטיבי המאפשר למשתמשים לארגן את הביקור שלהם לפי ימים ושעות.",
+    technologies: ["React Native", "Firebase", "Google Maps API", "Node.js", "Express"],
+    features: [
+      "בניית מסלולי טיול לפי ימים",
+      "מידע מפורט על אטרקציות",
+      "מפות אינטראקטיביות",
+      "המלצות מותאמות אישית",
+      "שיתוף מסלולים עם חברים"
+    ],
+    role: "מפתח אפליקציות מובייל, מנהל מוצר"
   }
 ];
 
