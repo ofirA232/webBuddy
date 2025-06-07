@@ -1,5 +1,5 @@
 import { projects } from "@/data/portfolioData";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/carousel";
 
 const ProjectsSection = () => {
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   
   const handleProjectClick = (id: number) => {
     const project = projects.find(p => p.id === id);
     if (project) {
-      setLocation(`/project/${project.slug}`);
+      navigate(`/project/${project.slug}`);
     }
   };
 

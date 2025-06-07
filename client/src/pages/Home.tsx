@@ -1,5 +1,5 @@
 import Hero from "@/components/Hero";
-import ProjectsSection from "@/components/ProjectsSection";
+import { Portfolio } from "@/components/Portfolio";
 import SkillsSection from "@/components/SkillsSection";
 import ContactSection from "@/components/ContactSection";
 import { useScrollToSection } from "@/hooks/useScrollToSection";
@@ -11,14 +11,14 @@ const Home = () => {
   
   // Set document title
   useEffect(() => {
-    document.title = "Ofir Zangi | Portfolio";
+    document.title = "אופיר זנגי | פורטפוליו";
   }, []);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
       <Hero />
-      <ProjectsSection />
       <SkillsSection />
+      <Portfolio />
       <ContactSection />
     </div>
   );
