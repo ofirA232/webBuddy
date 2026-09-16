@@ -1,6 +1,5 @@
 import { useState, FormEvent, useEffect } from "react";
 import emailjs from '@emailjs/browser';
-import "../components/MaskButton.css";
 
 const ContactSection = () => {
   useEffect(() => {
@@ -144,15 +143,10 @@ const ContactSection = () => {
                 required
               ></textarea>
             </div>
-            <div className="mask-button-container self-start">
-              <span className="mask-text">{submitting ? "שולח..." : "שליחה"}</span>
-            <button
-              type="submit"
-              disabled={submitting}
-                className={`mask-button ${submitting ? "opacity-70 cursor-wait" : ""}`}
-            >
+            <div className="self-start">
+              <button type="submit" disabled={submitting} className="btn-cta" aria-busy={submitting || undefined}>
                 {submitting ? "שולח..." : "שליחה"}
-            </button>
+              </button>
             </div>
           </form>
         )}

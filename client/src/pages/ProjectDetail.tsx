@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { projects } from "@/data/portfolioData";
 import { ArrowRight, Globe, Github } from "lucide-react";
 import { ProjectPlaceholder } from "@/components/ProjectPlaceholder";
+import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { site } from "@/data/site";
 import NotFound from "./not-found";
 
@@ -98,9 +99,12 @@ const ProjectDetail = () => {
           <div className="sticky top-8">
             <div className="rounded-2xl overflow-hidden shadow-2xl aspect-video bg-[#161616]">
               {project.image ? (
-                <img
+                <ResponsiveImage
                   src={project.image}
+                  small={project.imageSmall}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   alt={project.title}
+                  priority
                   className="w-full h-full object-cover object-top"
                 />
               ) : (

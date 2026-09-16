@@ -1,4 +1,5 @@
-import pelecardImage from "../assets/pelecard-website.png";
+import pelecardImage from "../assets/projects/pelecard-website.webp";
+import pelecardImageSmall from "../assets/projects/pelecard-website@640.webp";
 
 export interface Project {
   id: number;
@@ -34,6 +35,7 @@ export const projects: Project[] = [
     title: "אתר פלאקארד",
     slug: "pelecard-website",
     image: pelecardImage,
+    imageSmall: pelecardImageSmall,
     description: "אתר תדמית חדש לחברת הסליקה המובילה בישראל: אפיון, עיצוב, בנייה והעברה של יותר מ-100 עמודי תוכן.",
     fullDescription: "פלאקארד, חברה מובילה בתחום פתרונות הסליקה בישראל, פנתה אלי במטרה לשדרג את הנוכחות הדיגיטלית שלה באמצעות בניית אתר תדמית חדש לחלוטין. האתר החדש נועד להחליף את האתר הישן, לשמש ככלי מרכזי להגדלת מכירות ולידים, ולספק מידע מקיף ונגיש ללקוחות עסקיים וארגונים ברחבי הארץ. כמוביל הפרויקט, הייתי אחראי על כל שלבי התהליך, החל משלב התכנון והעיצוב ועד לפיתוח והטמעת התוכן.",
     tools: [

@@ -1,4 +1,5 @@
 import express, { type Express } from "express";
+import compression from "compression";
 import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
@@ -23,7 +24,7 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
-    allowedHosts: true,
+    allowedHosts: true as const,
   };
 
   const vite = await createViteServer({
@@ -76,10 +77,18 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  app.use(compression());
 
-  // fall through to index.html if the file doesn't exist
+  // Vite emits content-hashed files under /assets, so they can be cached forever.
+  app.use(
+    "/assets",
+    express.static(path.resolve(distPath, "assets"), { maxAge: "1y", immutable: true }),
+  );
+  app.use(express.static(distPath, { maxAge: "1h", index: false }));
+
+  // fall through to index.html if the file doesn't exist; always revalidate the shell
   app.use("*", (_req, res) => {
+    res.set("Cache-Control", "no-cache");
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

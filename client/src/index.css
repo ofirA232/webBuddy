@@ -7,73 +7,58 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
     @apply font-sans antialiased bg-black text-white;
   }
-}
 
-/* Container Queries Support */
-@container (min-width: 480px) {
-  .@[480px]\:gap-8 {
-    gap: 2rem;
-  }
-  
-  .@[480px]\:h-auto {
-    height: auto;
-  }
-  
-  .@[480px]\:min-w-\[400px\] {
-    min-width: 400px;
-  }
-  
-  .@[480px]\:text-5xl {
-    font-size: 3rem;
-  }
-  
-  .@[480px]\:font-black {
-    font-weight: 900;
-  }
-  
-  .@[480px]\:leading-tight {
-    line-height: 1.25;
-  }
-  
-  .@[480px]\:tracking-\[-0\.033em\] {
-    letter-spacing: -0.033em;
-  }
-  
-  .@[480px]\:text-base {
-    font-size: 1rem;
-  }
-  
-  .@[480px]\:font-normal {
-    font-weight: 400;
-  }
-  
-  .@[480px]\:leading-normal {
-    line-height: 1.5;
-  }
-  
-  .@[480px]\:h-12 {
-    height: 3rem;
-  }
-  
-  .@[480px]\:px-5 {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+  /* Keep anchored sections clear of the sticky header. */
+  section[id] {
+    scroll-margin-top: 5rem;
   }
 }
 
-@container (min-width: 864px) {
-  .@[864px]\:flex-row {
-    flex-direction: row;
+@layer components {
+  .btn-cta {
+    @apply inline-flex items-center justify-center h-11 sm:h-12 px-7 sm:px-8 rounded-full bg-white text-black font-bold text-sm sm:text-base border border-white transition-colors;
+    @apply hover:bg-black hover:text-white;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black;
+    @apply disabled:opacity-70 disabled:cursor-wait;
   }
-  
-  .@[864px]\:w-full {
-    width: 100%;
+}
+
+/* Hero aurora background (HeroBackground.tsx) */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  
-  .@[864px]\:justify-center {
-    justify-content: center;
+  33% {
+    transform: translate3d(6%, -4%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-5%, 5%, 0) scale(0.95);
+  }
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+  animation: aurora-drift 24s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob {
+    animation: none;
   }
 }

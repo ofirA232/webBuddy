@@ -4,6 +4,7 @@ import { Section } from "./section.js";
 import { cn } from "@/lib/utils";
 import { projects } from "@/data/portfolioData";
 import { ProjectPlaceholder } from "./ProjectPlaceholder";
+import { ResponsiveImage } from "./ResponsiveImage";
 
 type Category = 'all' | 'webDev' | 'webDesign' | 'branding' | 'seo' | 'digitalMarketing';
 
@@ -133,11 +134,11 @@ export function Portfolio() {
               >
                 <div className="aspect-[16/9] w-full overflow-hidden bg-[#161616]">
                   {project.image ? (
-                    <img
+                    <ResponsiveImage
                       src={project.image}
+                      small={project.imageSmall}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                       alt=""
-                      loading="lazy"
-                      decoding="async"
                       className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
