@@ -4,7 +4,10 @@ export interface Project {
   id: number;
   title: string;
   slug: string;
-  imageUrl: string;
+  /** Card / detail image (1280w). Omit until a real screenshot exists; a placeholder is rendered. */
+  image?: string;
+  /** Optional 640w variant for srcset. */
+  imageSmall?: string;
   description: string;
   fullDescription?: string;
   technologies?: string[];
@@ -30,34 +33,16 @@ export const projects: Project[] = [
     id: 1,
     title: "אתר פלאקארד",
     slug: "pelecard-website",
-    imageUrl: pelecardImage,
-    description: "",
+    image: pelecardImage,
+    description: "אתר תדמית חדש לחברת הסליקה המובילה בישראל: אפיון, עיצוב, בנייה והעברה של יותר מ-100 עמודי תוכן.",
     fullDescription: "פלאקארד, חברה מובילה בתחום פתרונות הסליקה בישראל, פנתה אלי במטרה לשדרג את הנוכחות הדיגיטלית שלה באמצעות בניית אתר תדמית חדש לחלוטין. האתר החדש נועד להחליף את האתר הישן, לשמש ככלי מרכזי להגדלת מכירות ולידים, ולספק מידע מקיף ונגיש ללקוחות עסקיים וארגונים ברחבי הארץ. כמוביל הפרויקט, הייתי אחראי על כל שלבי התהליך, החל משלב התכנון והעיצוב ועד לפיתוח והטמעת התוכן.",
     tools: [
-      {
-        icon: "🔧",
-        name: "פיתוח בקוד"
-      },
-      {
-        icon: "🎨",
-        name: "רספונסיביות"
-      },
-      {
-        icon: "⚙️",
-        name: "אינטגרציית CMS"
-      },
-      {
-        icon: "🔄",
-        name: "אחסון אתרים"
-      },
-      {
-        icon: "🔌",
-        name: "אינטגרציית API"
-      },
-      {
-        icon: "🔒",
-        name: "חתימות אתרים"
-      }
+      { icon: "🔧", name: "פיתוח בקוד" },
+      { icon: "🎨", name: "רספונסיביות" },
+      { icon: "⚙️", name: "אינטגרציית CMS" },
+      { icon: "🔄", name: "אחסון אתרים" },
+      { icon: "🔌", name: "אינטגרציית API" },
+      { icon: "🔒", name: "תחזוקת אתרים" }
     ],
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design"],
     challengeTitle: "האתגר:",
@@ -73,35 +58,9 @@ export const projects: Project[] = [
     id: 2,
     title: "Knowledge Center",
     slug: "knowledge-center",
-    imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
-    description: "A comprehensive documentation platform with searchable resources and interactive guides.",
+    // TODO(user): screenshot → assets-src/projects/knowledge-center.png, then `npm run images`
+    description: "מרכז ידע פנימי לצוות התמיכה של פלאקארד, כולל בוט צ'אט וחיבור למערכת הטיקטים.",
     fullDescription: "כמי שחווה על בשרו את אתגרי התמיכה הטכנית בפלאקארד, זיהיתי הזדמנות משמעותית לשיפור היעילות והידע של הצוות. מתוך הבנה עמוקה של נקודות הכאב והצורך הברור בכלי מרכזי, לקחתי יוזמה ליצור את Knowledge Center - מערכת ניהול ידע פנימית שנועדה להעצים את נציגי התמיכה, הן החדשים והן הוותיקים. פרויקט זה, שהובלתי ועיצבתי באופן מלא, הוא דוגמה להגדלת ראש שהביאה ערך משמעותי לארגון כולו.",
-    tools: [
-      {
-        icon: "🔧",
-        name: "פיתוח בקוד"
-      },
-      {
-        icon: "🎨",
-        name: "רספונסיביות"
-      },
-      {
-        icon: "⚙️",
-        name: "אינטגרציית CMS"
-      },
-      {
-        icon: "🔄",
-        name: "אחסון אתרים"
-      },
-      {
-        icon: "🔌",
-        name: "אינטגרציית API"
-      },
-      {
-        icon: "🔒",
-        name: "חתימות אתרים"
-      }
-    ],
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design" ,"Python" ],
     challengeTitle: "האתגר:",
     challengeText: "במהלך עבודתי כאיש תמיכה טכנית בפלאקארד, נתקלתי לא פעם במצבים מתסכלים בהם נציגים לא ידעו לספק מענה מדויק ומהיר ללקוחות. חוסר בגישה נוחה לידע עדכני הוביל לפניות חוזרות, לבזבוז זמן יקר ולתחושת תסכול בקרב הצוות והלקוחות כאחד. הבנתי שפתרון מערכתי הוא הכרחי כדי לשפר את איכות השירות ולייעל את העבודה.",
@@ -114,36 +73,10 @@ export const projects: Project[] = [
   {
     id: 3,
     title: "Docs.pelecard",
-    slug: "Docs.pelecard",
-    imageUrl: "https://cdn.usegalileo.ai/sdxl10/d3cf5e9a-31a1-45f0-b08c-38dfe9c421b7.png",
-    description: "A developer hub featuring API documentation, code examples, and implementation tutorials.",
+    slug: "docs-pelecard",
+    // TODO(user): screenshot → assets-src/projects/docs-pelecard.png, then `npm run images`
+    description: "מרכז מפתחים עם תיעוד API, דוגמאות קוד ומדריכי הטמעה ללקוחות פלאקארד.",
     fullDescription: "פרויקט Docs.pelecard נועד ליצור פלטפורמה מרכזית ונגישה עבור לקוחות פלאקארד, המאפשרת להם לקבל את כל המידע הטכני הדרוש לצורך התממשקות עם פתרונות החברה, כגון API, iframe ומוצרי תוכנה נוספים. במסגרת הפרויקט, הובלתי את תהליך העיצוב והבנייה של האתר בשיתוף פעולה הדוק עם מחלקת הפיתוח, ובנוסף הייתי אחראי על יצירת והנגשת התוכן הטכני לקהל הלקוחות.",
-    tools: [
-      {
-        icon: "🔧",
-        name: "פיתוח בקוד"
-      },
-      {
-        icon: "🎨",
-        name: "רספונסיביות"
-      },
-      {
-        icon: "⚙️",
-        name: "אינטגרציית CMS"
-      },
-      {
-        icon: "🔄",
-        name: "אחסון אתרים"
-      },
-      {
-        icon: "🔌",
-        name: "אינטגרציית API"
-      },
-      {
-        icon: "🔒",
-        name: "חתימות אתרים"
-      }
-    ],
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design" ,"Python" ],
     challengeTitle: "האתגר:",
     challengeText: "הפרויקט הציב מספר אתגרים ייחודיים. אחד הבולטים שבהם היה הצורך לגשר על הפער בין הידע הטכני המעמיק של מחלקת הפיתוח לבין הצורך של הלקוחות במידע ברור ופשוט להבנה. מחלקת הפיתוח התמקדה בעיקר בקוד ובפרטים טכניים, ולכן נדרשתי לעבד ולשכתב את המסמכים שלהם באופן משמעותי כדי להפוך אותם לנגישים וידידותיים למשתמש. אתגר נוסף היה העובדה שלא היה קיים מאגר מרכזי ומסודר של כל הידע הטכני של החברה, מה שחייב תהליך של סדר בית וארגון מחדש של המידע.",
@@ -158,35 +91,9 @@ export const projects: Project[] = [
     id: 4,
     title: "מערכת לניהול מלאי מכשירי סליקה",
     slug: "pos-management",
-    imageUrl: "https://cdn.usegalileo.ai/sdxl10/92b3ef47-a879-4cda-a3c6-08eb2ec2faa3.png",
-    description: "A Payment Terminal Inventory Management System.",
+    // TODO(user): screenshot → assets-src/projects/pos-management.png, then `npm run images`
+    description: "מערכת ווב פנימית ב-React ו-Supabase לניהול מלאי מכשירי סליקה עבור מחלקת הכספים.",
     fullDescription: "פרויקט זה עסק בפיתוח ובנייה של מערכת לניהול מלאי מכשירי סליקה עבור חברת פלאקארד. הצורך במערכת עלה ישירות מהשטח, כאשר מחלקת הכספים נתקלה בקשיים משמעותיים בניהול המלאי הקיים בשל היעדר פתרון ממוחשב. הובלתי וניהלתי את הפרויקט במלואו, החל משלב אפיון הצרכים ועד לעיצוב ופיתוח הפתרון המלא.",
-    tools: [
-      {
-        icon: "🔧",
-        name: "פיתוח בקוד"
-      },
-      {
-        icon: "🎨",
-        name: "רספונסיביות"
-      },
-      {
-        icon: "⚙️",
-        name: "אינטגרציית CMS"
-      },
-      {
-        icon: "🔄",
-        name: "אחסון אתרים"
-      },
-      {
-        icon: "🔌",
-        name: "אינטגרציית API"
-      },
-      {
-        icon: "🔒",
-        name: "חתימות אתרים"
-      }
-    ],
     technologies: ["React", "Supabase", "TypeScript", "AWS"],
     challengeTitle: "האתגר:",
     challengeText: "האתגר המרכזי בפרויקט היה להבין לעומק את תהליכי ניהול המלאי הקיימים במחלקת הכספים, אשר פעלו בצורה ידנית ולא יעילה. היה צורך לתרגם את הצרכים המורכבים של מחלקה שאינה טכנית לפתרון תוכנה שימושי וקל לתפעול. המטרה הייתה ליצור מערכת שתשתלב בצורה חלקה עם זרימת העבודה הקיימת, תוך פישוטה וייעולה, וזאת ללא פתרון קיים בשוק שיתאים בדיוק לצרכי החברה.",
@@ -200,35 +107,10 @@ export const projects: Project[] = [
     id: 5,
     title: "Tripy",
     slug: "tripy",
-    imageUrl: "https://cdn.usegalileo.ai/sdxl10/259b16b4-8954-4a08-ab3c-4787783e6420.png",
-    description: "A travel planning application with itinerary builder and destination guides.",
+    // TODO(user): screenshot → assets-src/projects/tripy.png, then `npm run images`
+    // TODO(user): solutionText / resultsText are empty; fill them in or remove this project
+    description: "אפליקציית תכנון טיולים עם בונה מסלולים, מידע על יעדים ואטרקציות.",
     fullDescription: "Tripy הוא אפליקציית תכנון טיולים המאפשרת למשתמשים ליצור מסלולי טיול מותאמים אישית. האפליקציה כוללת מידע מקיף על יעדים, אטרקציות, מסעדות ומלונות, וכן כלי תכנון אינטראקטיבי המאפשר למשתמשים לארגן את הביקור שלהם לפי ימים ושעות.",
-    tools: [
-      {
-        icon: "🔧",
-        name: "פיתוח בקוד"
-      },
-      {
-        icon: "🎨",
-        name: "רספונסיביות"
-      },
-      {
-        icon: "⚙️",
-        name: "אינטגרציית CMS"
-      },
-      {
-        icon: "🔄",
-        name: "אחסון אתרים"
-      },
-      {
-        icon: "🔌",
-        name: "אינטגרציית API"
-      },
-      {
-        icon: "🔒",
-        name: "חתימות אתרים"
-      }
-    ],
     technologies: ["React Native", "Firebase", "Google Maps API", "Node.js", "Express"],
     challengeTitle: "תכנון מסלולים חכם",
     challengeText: "פיתחנו מערכת תכנון מסלולים חכמה המשלבת נתוני מיקום בזמן אמת, המלצות מקומיות ואופטימיזציה של זמני נסיעה. המערכת מאפשרת למשתמשים לתכנן טיולים מותאמים אישית בקלות ויעילות.",

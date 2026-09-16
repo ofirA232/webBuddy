@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import profileImage from "../assets/ofir_4.jpg";
+import { site } from "@/data/site";
 import "./MaskButton.css";
 
 // Global declaration for Vanta
@@ -106,11 +107,15 @@ const Hero = () => {
             {/* Left column - Text */}
             <div className="order-2 md:order-1 flex flex-col justify-center gap-4 md:gap-6 text-right">
               <div className="flex flex-col gap-3 md:gap-4">
-                <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight">
-                  אופיר זנגי
+                {/* TODO(user): approve or edit this positioning copy */}
+                <p className="text-[#ff5c5c] text-sm sm:text-base font-medium tracking-wide">
+                  {site.name} · {site.role}
+                </p>
+                <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
+                  בונה אתרי וורדפרס שנראים מצוין ומביאים לקוחות
                 </h1>
-                <p className="text-white text-sm sm:text-base font-normal leading-relaxed max-w-prose">
-                  אני מנהל דיגיטל המתמחה בבניית אתרים מרשימים בוורדפרס. מהקונספט ועד ליישום, אני מתמקד ביצירת נוכחות אינטרנטית מעניינת שמביאה תוצאות. עם רקע חזק ב-SEO ואסטרטגיית תוכן, אני מבטיח שכל אתר שאני בונה לא רק נראה נהדר אלא גם מדורג גבוה במנועי חיפוש.
+                <p className="text-gray-300 text-base sm:text-lg font-normal leading-relaxed max-w-prose">
+                  מהאפיון ועד ההשקה: אתרי תדמית, מרכזי ידע ומערכות פנימיות, עם רקע חזק ב-SEO ובאסטרטגיית תוכן. בין היתר הובלתי את בניית האתר החדש של פלאקארד, חברת הסליקה המובילה בישראל.
                 </p>
               </div>
               <div className="mask-button-container self-start">

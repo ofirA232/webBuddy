@@ -1,11 +1,8 @@
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { Link } from "react-router-dom";
 
 const NotFound = () => {
-  const [, setLocation] = useLocation();
-
   useEffect(() => {
-    // Set page title
     document.title = "דף לא נמצא | אופיר זנגי";
   }, []);
 
@@ -15,12 +12,12 @@ const NotFound = () => {
       <p className="text-white/80 text-lg max-w-md mb-8">
         מצטערים, הדף שחיפשת לא קיים או שהוסר.
       </p>
-      <button
-        onClick={() => setLocation("/")}
-        className="flex w-fit cursor-pointer items-center justify-center rounded-full h-10 px-6 bg-white text-black text-base font-bold hover:bg-gray-200 transition-colors"
+      <Link
+        to="/"
+        className="flex w-fit items-center justify-center rounded-full h-10 px-6 bg-white text-black text-base font-bold hover:bg-gray-200 transition-colors"
       >
-        <span>חזרה לדף הבית</span>
-      </button>
+        חזרה לדף הבית
+      </Link>
     </div>
   );
 };

@@ -1,64 +1,56 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { projects, Project } from "@/data/portfolioData";
-import { ArrowLeft, Globe, Github } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { projects } from "@/data/portfolioData";
+import { ArrowRight, Globe, Github } from "lucide-react";
+import { ProjectPlaceholder } from "@/components/ProjectPlaceholder";
+import { site } from "@/data/site";
+import NotFound from "./not-found";
 
 const ProjectDetail = () => {
-  const navigate = useNavigate();
-  const params = useParams();
-  const [project, setProject] = useState<Project | null>(null);
+  const { slug } = useParams();
+  const project = projects.find((p) => p.slug === slug);
 
   useEffect(() => {
-    const currentProject = projects.find(p => p.slug === params.slug);
-    if (currentProject) {
-      setProject(currentProject);
-      // Set document title
-      document.title = `${currentProject.title} | פורטפוליו אופיר זנגי`;
-    } else {
-      // Redirect to 404 if project not found
-      navigate("/not-found");
+    if (project) {
+      document.title = `${project.title} | ${site.name}`;
     }
-  }, [params.slug, navigate]);
-
-  const goBack = () => {
-    navigate("/");
-  };
+  }, [project]);
 
   if (!project) {
-    return (
-      <div className="container mx-auto py-20 px-4 min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-white text-xl">טוען...</div>
-      </div>
-    );
+    return <NotFound />;
   }
+
+  const liveUrl = project.liveUrl || project.demoUrl;
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
-      <button 
-        onClick={goBack}
-        className="flex items-center gap-2 text-white mb-8 hover:text-gray-300 transition-colors"
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-white mb-8 hover:text-gray-300 transition-colors"
       >
-        <ArrowLeft size={20} />
+        <ArrowRight size={20} aria-hidden="true" />
         <span>חזרה לדף הבית</span>
-      </button>
+      </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Right Column - Content */}
+        {/* Content column */}
         <div className="order-2 lg:order-1">
           <h1 className="text-white text-3xl md:text-4xl font-bold mb-6 text-right">{project.title}</h1>
-          
-          <div className="mb-8 text-right" dir="rtl">
-            <h2 className="text-white text-2xl font-bold mb-4">תיאור הפרויקט</h2>
-            <p className="text-white/90 text-lg leading-relaxed">{project.fullDescription}</p>
-          </div>
+
+          {project.fullDescription && (
+            <div className="mb-8 text-right" dir="rtl">
+              <h2 className="text-white text-2xl font-bold mb-4">תיאור הפרויקט</h2>
+              <p className="text-white/90 text-lg leading-relaxed">{project.fullDescription}</p>
+            </div>
+          )}
 
           {project.tools && project.tools.length > 0 && (
             <div className="mb-8 text-right" dir="rtl">
               <h2 className="text-white text-2xl font-bold mb-4">כלים בהם השתמשתי</h2>
               <div className="grid grid-cols-2 gap-4">
-                {project.tools.map((tool, index) => (
-                  <div key={index} className="flex items-center gap-3 bg-[#111111] p-4 rounded-lg">
-                    <span className="text-2xl">{tool.icon}</span>
+                {project.tools.map((tool) => (
+                  <div key={tool.name} className="flex items-center gap-3 bg-[#111111] p-4 rounded-lg">
+                    <span className="text-2xl" aria-hidden="true">{tool.icon}</span>
                     <span className="text-white">{tool.name}</span>
                   </div>
                 ))}
@@ -72,7 +64,7 @@ const ProjectDetail = () => {
               <p className="text-white/90 text-lg leading-relaxed">{project.challengeText}</p>
             </div>
           )}
-          
+
           {project.solutionTitle && project.solutionText && (
             <div className="mb-8 text-right" dir="rtl">
               <h2 className="text-white text-2xl font-bold mb-4">{project.solutionTitle}</h2>
@@ -80,19 +72,19 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          {project.resultsTitle || project.resultsText ? (
+          {project.resultsTitle && project.resultsText && (
             <div className="mb-8 text-right" dir="rtl">
               <h2 className="text-white text-2xl font-bold mb-4">{project.resultsTitle}</h2>
               <p className="text-white/90 text-lg leading-relaxed">{project.resultsText}</p>
             </div>
-          ) : null}
+          )}
 
           {project.technologies && project.technologies.length > 0 && (
             <div className="mb-8 text-right" dir="rtl">
               <h2 className="text-white text-2xl font-bold mb-4">טכנולוגיות</h2>
               <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech, index) => (
-                  <span key={index} className="bg-[#111111] px-3 py-1 rounded-lg text-white">
+                {project.technologies.map((tech) => (
+                  <span key={tech} className="bg-[#111111] px-3 py-1 rounded-lg text-white">
                     {tech}
                   </span>
                 ))}
@@ -101,42 +93,48 @@ const ProjectDetail = () => {
           )}
         </div>
 
-        {/* Left Column - Image */}
+        {/* Image column */}
         <div className="order-1 lg:order-2">
           <div className="sticky top-8">
-            <div className="rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src={project.imageUrl} 
-                alt={project.title} 
-                className="w-full h-auto"
-              />
+            <div className="rounded-2xl overflow-hidden shadow-2xl aspect-video bg-[#161616]">
+              {project.image ? (
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover object-top"
+                />
+              ) : (
+                <ProjectPlaceholder title={project.title} />
+              )}
             </div>
 
-            <div className="mt-8 space-y-4">
-              {(project.liveUrl || project.demoUrl) && (
-                <a
-                  href={project.liveUrl || project.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-gray-100 transition-colors"
-                >
-                  <Globe size={18} />
-                  <span>צפה באתר</span>
-                </a>
-              )}
-              
-              {project.githubUrl && (
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#333333] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#444444] transition-colors"
-                >
-                  <Github size={18} />
-                  <span>צפה בקוד</span>
-                </a>
-              )}
-            </div>
+            {(liveUrl || project.githubUrl) && (
+              <div className="mt-8 space-y-4">
+                {liveUrl && (
+                  <a
+                    href={liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-gray-100 transition-colors"
+                  >
+                    <Globe size={18} aria-hidden="true" />
+                    <span>צפה באתר</span>
+                  </a>
+                )}
+
+                {project.githubUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#333333] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#444444] transition-colors"
+                  >
+                    <Github size={18} aria-hidden="true" />
+                    <span>צפה בקוד</span>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

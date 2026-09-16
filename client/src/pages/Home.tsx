@@ -4,14 +4,15 @@ import SkillsSection from "@/components/SkillsSection";
 import ContactSection from "@/components/ContactSection";
 import { useScrollToSection } from "@/hooks/useScrollToSection";
 import { useEffect } from "react";
+import { site } from "@/data/site";
 
 const Home = () => {
   // Initialize scroll functionality
   useScrollToSection();
-  
+
   // Set document title
   useEffect(() => {
-    document.title = "אופיר זנגי | פורטפוליו";
+    document.title = site.title;
   }, []);
 
   return (

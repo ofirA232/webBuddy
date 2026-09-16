@@ -1,0 +1,24 @@
+/**
+ * Single source of truth for real-world site values.
+ * Components hide anything whose value is an empty string, so nothing fake ships.
+ */
+export const site = {
+  name: "אופיר זנגי",
+  role: "מנהל דיגיטל",
+  title: "אופיר זנגי | בניית אתרי וורדפרס וניהול דיגיטל",
+  description:
+    "אופיר זנגי, מנהל דיגיטל ובונה אתרי וורדפרס. אתרי תדמית, מרכזי ידע ומערכות פנימיות, עם דגש על עיצוב, SEO ותוצאות.",
+  url: "", // TODO(user): canonical URL, e.g. https://ofirzangi.com (used for og:url)
+  email: "", // TODO(user): contact email, shown in the footer when set
+  social: {
+    github: "https://github.com/ofirzangi", // TODO(user): verify this is your profile
+    linkedin: "", // TODO(user): real LinkedIn profile URL
+    twitter: "", // TODO(user): leave empty to hide
+  },
+  navLinks: [
+    { to: "/", label: "אודות", hash: "" },
+    { to: "/#skills", label: "כישורים", hash: "#skills" },
+    { to: "/#projects", label: "פרויקטים", hash: "#projects" },
+    { to: "/#contact", label: "יצירת קשר", hash: "#contact" },
+  ],
+} as const;
