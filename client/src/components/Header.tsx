@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { site } from "@/data/site";
 
@@ -23,20 +23,26 @@ const socialLinks = [
   },
 ].filter((s) => s.href);
 
+const LINK_STAGGER_MS = 40;
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const menuState = mobileMenuOpen ? "open" : "closed";
 
   const isActive = (hash: string) =>
     hash ? location.hash === hash : location.pathname === "/" && !location.hash;
 
   const linkClass = (hash: string) =>
-    `text-sm font-medium hover:text-gray-300 transition-colors ${
+    `text-sm font-medium hover:text-gray-300 transition-colors duration-150 ${
       isActive(hash) ? "text-gray-300" : "text-white"
     }`;
 
   return (
-    <header className="border-b border-[#333333] sticky top-0 z-50 bg-black">
+    <header
+      className="border-b border-[#333333] sticky top-0 z-50 bg-black"
+      style={{ viewTransitionName: "site-header" } as CSSProperties}
+    >
       <div className="px-4 sm:px-6 lg:px-8 relative z-50 bg-black py-3 sm:py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -47,6 +53,7 @@ const Header = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   className="text-white"
+                  aria-hidden="true"
                 >
                   <path
                     d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z"
@@ -58,33 +65,35 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu button: three bars morphing into an X with transform/opacity only */}
           <button
+            type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="md:hidden p-2 text-white hover:text-gray-300 transition-colors"
+            className="md:hidden p-2 text-white pressable-sm"
             aria-label={mobileMenuOpen ? "סגור תפריט" : "פתח תפריט"}
             aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <div className="relative w-5 h-5">
+            <div className="relative w-5 h-5" aria-hidden="true">
               <span
-                className={`absolute left-0 top-0 w-full h-0.5 bg-current transform transition-all duration-300 ease-in-out ${
-                  mobileMenuOpen ? "rotate-45 top-2" : ""
+                className={`absolute left-0 top-0 w-full h-0.5 bg-current transition-[transform,opacity] duration-200 ease-out-strong ${
+                  mobileMenuOpen ? "translate-y-2 rotate-45" : ""
                 }`}
               />
               <span
-                className={`absolute left-0 top-2 w-full h-0.5 bg-current transform transition-all duration-200 ${
-                  mobileMenuOpen ? "opacity-0" : ""
+                className={`absolute left-0 top-2 w-full h-0.5 bg-current transition-[transform,opacity] duration-200 ease-out-strong ${
+                  mobileMenuOpen ? "opacity-0 scale-x-50" : ""
                 }`}
               />
               <span
-                className={`absolute left-0 bottom-0 w-full h-0.5 bg-current transform transition-all duration-300 ease-in-out ${
-                  mobileMenuOpen ? "-rotate-45 bottom-2" : ""
+                className={`absolute left-0 bottom-0 w-full h-0.5 bg-current transition-[transform,opacity] duration-200 ease-out-strong ${
+                  mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
                 }`}
               />
             </div>
           </button>
 
-          {/* Desktop Navigation */}
+          {/* Desktop navigation */}
           <div className="hidden md:flex items-center justify-end gap-4 sm:gap-6">
             <nav className="flex items-center gap-4 sm:gap-6">
               {site.navLinks.map((link) => (
@@ -103,7 +112,7 @@ const Header = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="flex items-center justify-center rounded-full h-10 w-10 bg-[#333333] text-white hover:bg-[#444444] transition-colors"
+                    className="flex items-center justify-center rounded-full h-10 w-10 bg-[#333333] text-white can-hover:hover:bg-[#444444] pressable"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -123,17 +132,16 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu: backdrop + drop-down panel; timing lives in index.css (.mobile-menu-*) */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 md:hidden z-40 ${
-          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className="mobile-menu-backdrop fixed inset-0 bg-black/50 md:hidden z-40"
+        data-state={menuState}
         onClick={() => setMobileMenuOpen(false)}
       />
       <div
-        className={`md:hidden fixed top-[57px] sm:top-[65px] right-0 w-full bg-black transform transition-transform duration-500 ease-out z-40 ${
-          mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
-        }`}
+        id="mobile-menu"
+        className="mobile-menu-panel md:hidden fixed top-[57px] sm:top-[65px] right-0 w-full bg-black z-40"
+        data-state={menuState}
         aria-hidden={!mobileMenuOpen}
       >
         <div className="px-4">
@@ -142,12 +150,10 @@ const Header = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`${linkClass(link.hash)} py-2 text-right transform transition-all duration-500 ease-out ${
-                  mobileMenuOpen
-                    ? "translate-x-0 opacity-100 scale-100"
-                    : "translate-x-16 opacity-0 scale-90"
-                }`}
-                style={{ transitionDelay: `${100 + i * 100}ms` }}
+                className={`mobile-menu-link ${linkClass(link.hash)} py-2 text-right`}
+                // Stagger only on open (0/40/80/120ms); close together.
+                style={{ transitionDelay: mobileMenuOpen ? `${i * LINK_STAGGER_MS}ms` : "0ms" }}
+                tabIndex={mobileMenuOpen ? 0 : -1}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}

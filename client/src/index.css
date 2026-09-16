@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Motion tokens. Mirrored in tailwind.config.ts (transitionTimingFunction) and client/src/lib/motion.ts. */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
   * {
     @apply border-border;
   }
@@ -27,16 +34,67 @@
   }
 }
 
-@layer components {
-  .btn-cta {
-    @apply inline-flex items-center justify-center h-11 sm:h-12 px-7 sm:px-8 rounded-full bg-white text-black font-bold text-sm sm:text-base border border-white transition-colors;
-    @apply hover:bg-black hover:text-white;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black;
-    @apply disabled:opacity-70 disabled:cursor-wait;
+@layer utilities {
+  /* Press feedback for anything clickable. Also carries the colour transitions so it can replace `transition-colors`. */
+  .pressable,
+  .pressable-sm,
+  .pressable-card {
+    transition-property: transform, color, background-color, border-color;
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
+  }
+  .pressable:active {
+    transform: scale(0.97);
+  }
+  .pressable-sm:active {
+    transform: scale(0.95);
+  }
+  .pressable-card:active {
+    transform: scale(0.98);
   }
 }
 
-/* Hero aurora background (HeroBackground.tsx) */
+/* ---------- Hero entrance (runs once on load; keyframes are fine, nothing interrupts it) ---------- */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes clip-up {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.hero-item {
+  animation: hero-in 400ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.hero-photo {
+  animation: clip-up 600ms var(--ease-out) both;
+  animation-delay: 120ms;
+}
+
+/* ---------- Hero aurora background (HeroBackground.tsx) ---------- */
 @keyframes aurora-drift {
   0%,
   100% {
@@ -57,8 +115,79 @@
   animation: aurora-drift 24s ease-in-out infinite;
 }
 
+/* ---------- Mobile menu (Header.tsx) ---------- */
+.mobile-menu-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+.mobile-menu-backdrop[data-state="open"] {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 300ms;
+}
+
+.mobile-menu-panel {
+  transform: translateY(-100%);
+  transition: transform 200ms var(--ease-out); /* close: quick */
+}
+.mobile-menu-panel[data-state="open"] {
+  transform: translateY(0);
+  transition: transform 300ms var(--ease-drawer); /* open: iOS-like drawer curve */
+}
+
+.mobile-menu-link {
+  opacity: 0;
+  transform: translateX(16px);
+  transition: transform 250ms var(--ease-out), opacity 250ms var(--ease-out);
+}
+.mobile-menu-panel[data-state="open"] .mobile-menu-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---------- View transitions (lib/viewTransition.tsx) ---------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-group(*) {
+  animation-duration: 300ms;
+  animation-timing-function: var(--ease-in-out);
+}
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* ---------- Reduced motion: gentler, not zero ---------- */
 @media (prefers-reduced-motion: reduce) {
+  .hero-item {
+    animation-name: hero-fade;
+    animation-duration: 200ms;
+  }
+  .hero-photo {
+    animation: hero-fade 200ms var(--ease-out) both;
+  }
   .aurora-blob {
     animation: none;
+  }
+  .mobile-menu-panel,
+  .mobile-menu-panel[data-state="open"] {
+    transition-duration: 200ms;
+  }
+  .mobile-menu-link {
+    transform: none;
+  }
+  .pressable:active,
+  .pressable-sm:active,
+  .pressable-card:active {
+    transform: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 150ms;
   }
 }

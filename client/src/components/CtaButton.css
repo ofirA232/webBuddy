@@ -1,0 +1,103 @@
+/*
+ * Pill CTA. Hover reveals a black layer carrying a duplicate white label, clipped in one motion
+ * so text and background always transition together (no white-on-white frame).
+ * clip-path sides are physical: inset(0 0 0 100%) hides it behind the right edge, the RTL start.
+ */
+.cta-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 44px;
+  padding: 0 1.75rem;
+  border: 1px solid #fff;
+  border-radius: 9999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+
+.cta-button--sm {
+  min-width: 100px;
+  height: 40px;
+  padding: 0 1.5rem;
+  font-size: 13px;
+}
+
+@media (min-width: 640px) {
+  .cta-button {
+    min-width: 140px;
+    height: 48px;
+    font-size: 16px;
+  }
+  .cta-button--sm {
+    min-width: 120px;
+    height: 44px;
+    font-size: 15px;
+  }
+}
+
+.cta-button__label {
+  display: inline-block;
+  transition: filter 200ms ease, opacity 200ms ease;
+}
+
+.cta-button__label[data-pending] {
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.cta-button__overlay {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 160ms var(--ease-out); /* leave: faster than enter */
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta-button:hover .cta-button__overlay {
+    clip-path: inset(0 0 0 0);
+    transition-duration: 220ms;
+  }
+}
+
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+.cta-button:disabled {
+  cursor: wait;
+}
+
+.cta-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-button:active {
+    transform: none;
+  }
+  .cta-button__overlay {
+    clip-path: inset(0);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .cta-button:hover .cta-button__overlay {
+    opacity: 1;
+  }
+}

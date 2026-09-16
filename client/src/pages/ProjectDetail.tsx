@@ -1,10 +1,12 @@
-import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { projects } from "@/data/portfolioData";
+import { useEffect, type CSSProperties } from "react";
+import { useParams } from "react-router-dom";
 import { ArrowRight, Globe, Github } from "lucide-react";
+import { projects } from "@/data/portfolioData";
+import { site } from "@/data/site";
+import { TransitionLink } from "@/lib/viewTransition";
 import { ProjectPlaceholder } from "@/components/ProjectPlaceholder";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
-import { site } from "@/data/site";
+import { Reveal } from "@/components/motion/Reveal";
 import NotFound from "./not-found";
 
 const ProjectDetail = () => {
@@ -22,77 +24,93 @@ const ProjectDetail = () => {
   }
 
   const liveUrl = project.liveUrl || project.demoUrl;
+  // Same name as the card image on the home page, so the image morphs between routes.
+  const imageStyle = { viewTransitionName: `project-${project.slug}` } as CSSProperties;
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
-      <Link
+      <TransitionLink
         to="/"
-        className="inline-flex items-center gap-2 text-white mb-8 hover:text-gray-300 transition-colors"
+        className="pressable inline-flex items-center gap-2 text-white mb-8 can-hover:hover:text-gray-300"
       >
         <ArrowRight size={20} aria-hidden="true" />
         <span>חזרה לדף הבית</span>
-      </Link>
+      </TransitionLink>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Content column */}
-        <div className="order-2 lg:order-1">
-          <h1 className="text-white text-3xl md:text-4xl font-bold mb-6 text-right">{project.title}</h1>
+        <Reveal stagger={0.06} className="order-2 lg:order-1">
+          <Reveal.Item>
+            <h1 className="text-white text-3xl md:text-4xl font-bold mb-6 text-right">{project.title}</h1>
+          </Reveal.Item>
 
           {project.fullDescription && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">תיאור הפרויקט</h2>
-              <p className="text-white/90 text-lg leading-relaxed">{project.fullDescription}</p>
-            </div>
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">תיאור הפרויקט</h2>
+                <p className="text-white/90 text-lg leading-relaxed">{project.fullDescription}</p>
+              </div>
+            </Reveal.Item>
           )}
 
           {project.tools && project.tools.length > 0 && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">כלים בהם השתמשתי</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {project.tools.map((tool) => (
-                  <div key={tool.name} className="flex items-center gap-3 bg-[#111111] p-4 rounded-lg">
-                    <span className="text-2xl" aria-hidden="true">{tool.icon}</span>
-                    <span className="text-white">{tool.name}</span>
-                  </div>
-                ))}
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">כלים בהם השתמשתי</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {project.tools.map((tool) => (
+                    <div key={tool.name} className="flex items-center gap-3 bg-[#111111] p-4 rounded-lg">
+                      <span className="text-2xl" aria-hidden="true">{tool.icon}</span>
+                      <span className="text-white">{tool.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </Reveal.Item>
           )}
 
           {project.challengeTitle && project.challengeText && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">{project.challengeTitle}</h2>
-              <p className="text-white/90 text-lg leading-relaxed">{project.challengeText}</p>
-            </div>
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">{project.challengeTitle}</h2>
+                <p className="text-white/90 text-lg leading-relaxed">{project.challengeText}</p>
+              </div>
+            </Reveal.Item>
           )}
 
           {project.solutionTitle && project.solutionText && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">{project.solutionTitle}</h2>
-              <p className="text-white/90 text-lg leading-relaxed">{project.solutionText}</p>
-            </div>
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">{project.solutionTitle}</h2>
+                <p className="text-white/90 text-lg leading-relaxed">{project.solutionText}</p>
+              </div>
+            </Reveal.Item>
           )}
 
           {project.resultsTitle && project.resultsText && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">{project.resultsTitle}</h2>
-              <p className="text-white/90 text-lg leading-relaxed">{project.resultsText}</p>
-            </div>
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">{project.resultsTitle}</h2>
+                <p className="text-white/90 text-lg leading-relaxed">{project.resultsText}</p>
+              </div>
+            </Reveal.Item>
           )}
 
           {project.technologies && project.technologies.length > 0 && (
-            <div className="mb-8 text-right" dir="rtl">
-              <h2 className="text-white text-2xl font-bold mb-4">טכנולוגיות</h2>
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
-                  <span key={tech} className="bg-[#111111] px-3 py-1 rounded-lg text-white">
-                    {tech}
-                  </span>
-                ))}
+            <Reveal.Item className="mb-8 text-right">
+              <div dir="rtl">
+                <h2 className="text-white text-2xl font-bold mb-4">טכנולוגיות</h2>
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
+                    <span key={tech} className="bg-[#111111] px-3 py-1 rounded-lg text-white">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </Reveal.Item>
           )}
-        </div>
+        </Reveal>
 
         {/* Image column */}
         <div className="order-1 lg:order-2">
@@ -105,21 +123,22 @@ const ProjectDetail = () => {
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   alt={project.title}
                   priority
+                  style={imageStyle}
                   className="w-full h-full object-cover object-top"
                 />
               ) : (
-                <ProjectPlaceholder title={project.title} />
+                <ProjectPlaceholder title={project.title} style={imageStyle} />
               )}
             </div>
 
             {(liveUrl || project.githubUrl) && (
-              <div className="mt-8 space-y-4">
+              <Reveal delay={0.15} className="mt-8 space-y-4">
                 {liveUrl && (
                   <a
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-gray-100 transition-colors"
+                    className="pressable flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black can-hover:hover:bg-gray-100"
                   >
                     <Globe size={18} aria-hidden="true" />
                     <span>צפה באתר</span>
@@ -131,13 +150,13 @@ const ProjectDetail = () => {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#333333] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#444444] transition-colors"
+                    className="pressable flex w-full items-center justify-center gap-2 rounded-lg bg-[#333333] px-4 py-2.5 text-sm font-medium text-white can-hover:hover:bg-[#444444]"
                   >
                     <Github size={18} aria-hidden="true" />
                     <span>צפה בקוד</span>
                   </a>
                 )}
-              </div>
+              </Reveal>
             )}
           </div>
         </div>
