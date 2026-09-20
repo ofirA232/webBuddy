@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowRight, Globe, Github } from "lucide-react";
 import { projects } from "@/data/portfolioData";
@@ -24,13 +24,12 @@ const ProjectDetail = () => {
   }
 
   const liveUrl = project.liveUrl || project.demoUrl;
-  // Same name as the card image on the home page, so the image morphs between routes.
-  const imageStyle = { viewTransitionName: `project-${project.slug}` } as CSSProperties;
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
       <TransitionLink
         to="/"
+        direction="back"
         className="pressable inline-flex items-center gap-2 text-white mb-8 can-hover:hover:text-gray-300"
       >
         <ArrowRight size={20} aria-hidden="true" />
@@ -123,11 +122,10 @@ const ProjectDetail = () => {
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   alt={project.title}
                   priority
-                  style={imageStyle}
                   className="w-full h-full object-cover object-top"
                 />
               ) : (
-                <ProjectPlaceholder title={project.title} style={imageStyle} />
+                <ProjectPlaceholder title={project.title} />
               )}
             </div>
 

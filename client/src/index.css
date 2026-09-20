@@ -146,19 +146,56 @@
   transform: translateX(0);
 }
 
-/* ---------- View transitions (lib/viewTransition.tsx) ---------- */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 250ms;
-  animation-timing-function: var(--ease-out);
+/* ---------- Page transitions (lib/viewTransition.tsx) ----------
+ * The incoming page sweeps over the outgoing one behind a soft radial mask.
+ * The old page never animates; it simply sits there and gets covered.
+ * Registering --wipe as a percentage is what makes the gradient animatable.
+ */
+@property --wipe {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
 }
-::view-transition-group(*) {
-  animation-duration: 300ms;
-  animation-timing-function: var(--ease-in-out);
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
-::view-transition-old(site-header),
-::view-transition-new(site-header) {
+
+@keyframes page-wipe-in {
+  from {
+    --wipe: 0%;
+  }
+  to {
+    --wipe: 180%;
+  }
+}
+
+::view-transition-old(root) {
   animation: none;
+}
+
+::view-transition-new(root) {
+  animation: page-fade-in 250ms linear both;
+}
+
+@supports (mask-image: radial-gradient(#000, #0000)) or (-webkit-mask-image: radial-gradient(#000, #0000)) {
+  ::view-transition-new(root) {
+    --wipe: 0%;
+    /* RTL: forward navigation sweeps in from the start edge, i.e. the right. */
+    mask-image: radial-gradient(ellipse var(--wipe) 165% at 108% 50%, #000 68%, transparent 100%);
+    mask-repeat: no-repeat;
+    animation: page-wipe-in 250ms linear forwards;
+  }
+
+  /* Going back reverses the sweep. */
+  :root[data-nav-direction="back"]::view-transition-new(root) {
+    mask-image: radial-gradient(ellipse var(--wipe) 165% at -8% 50%, #000 68%, transparent 100%);
+  }
 }
 
 /* ---------- Reduced motion: gentler, not zero ---------- */
@@ -185,9 +222,10 @@
   .pressable-card:active {
     transform: none;
   }
-  ::view-transition-group(*),
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 150ms;
+  /* No sweep; the new page just fades in. */
+  ::view-transition-new(root),
+  :root[data-nav-direction="back"]::view-transition-new(root) {
+    mask-image: none;
+    animation: page-fade-in 200ms var(--ease-out) both;
   }
 }

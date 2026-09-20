@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { TransitionLink as Link } from "@/lib/viewTransition";
 
 const NotFound = () => {
   useEffect(() => {
@@ -14,6 +14,7 @@ const NotFound = () => {
       </p>
       <Link
         to="/"
+        direction="back"
         className="flex w-fit items-center justify-center rounded-full h-10 px-6 bg-white text-black text-base font-bold hover:bg-gray-200 transition-colors"
       >
         חזרה לדף הבית

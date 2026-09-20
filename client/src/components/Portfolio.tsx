@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { projects, type Project } from "@/data/portfolioData";
@@ -30,8 +30,6 @@ const FILTERS: { id: Filter; label: string }[] = [
  * then the name, a one-line tagline and the category tags.
  */
 function ProjectCard({ project }: { project: Project }) {
-  const mediaStyle = { viewTransitionName: `project-${project.slug}` } as CSSProperties;
-
   return (
     <article>
       <TransitionLink
@@ -45,13 +43,11 @@ function ProjectCard({ project }: { project: Project }) {
               small={project.imageSmall}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               alt=""
-              style={mediaStyle}
               className="h-full w-full object-cover object-top transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.04]"
             />
           ) : (
             <ProjectPlaceholder
               title={project.title}
-              style={mediaStyle}
               className="transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.04]"
             />
           )}
