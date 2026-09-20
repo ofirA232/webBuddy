@@ -29,7 +29,8 @@
   }
 
   /* Keep anchored sections clear of the sticky header. */
-  section[id] {
+  section[id],
+  [id^="service-"] {
     scroll-margin-top: 5rem;
   }
 }
@@ -113,6 +114,33 @@
   border-radius: 9999px;
   will-change: transform;
   animation: aurora-drift 24s ease-in-out infinite;
+}
+
+/* ---------- Services list (SkillsSection.tsx) ----------
+ * The category being read fades up to full strength and thickens. Rubik is loaded as a
+ * variable font, so the weight interpolates instead of snapping between cut sizes.
+ */
+.service-nav-link {
+  font-weight: 300;
+  opacity: 0.45;
+  transition: font-weight 500ms var(--ease-out), opacity 500ms var(--ease-out);
+}
+
+.service-nav-link.is-active {
+  font-weight: 550;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .service-nav-link:hover {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-nav-link {
+    transition-duration: 200ms;
+  }
 }
 
 /* ---------- Mobile menu (Header.tsx) ---------- */
