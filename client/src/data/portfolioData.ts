@@ -9,7 +9,15 @@ export interface Project {
   image?: string;
   /** Optional 640w variant for srcset. */
   imageSmall?: string;
+  /** One short line under the title in the projects grid (what the client is, in a few words). */
+  tagline?: string;
+  /** Card teaser, and the paragraph in a featured row when there is no fullDescription. */
   description: string;
+  /**
+   * Featured projects get a full-width row at the top of the projects section;
+   * everything else goes into the grid below. Keep this to 2–3 projects.
+   */
+  featured?: boolean;
   fullDescription?: string;
   technologies?: string[];
   challengeTitle?: string;
@@ -36,6 +44,8 @@ export const projects: Project[] = [
     slug: "pelecard-website",
     image: pelecardImage,
     imageSmall: pelecardImageSmall,
+    tagline: "חברת הסליקה המובילה בישראל",
+    featured: true,
     description: "אתר תדמית חדש לחברת הסליקה המובילה בישראל: אפיון, עיצוב, בנייה והעברה של יותר מ-100 עמודי תוכן.",
     fullDescription: "פלאקארד, חברה מובילה בתחום פתרונות הסליקה בישראל, פנתה אלי במטרה לשדרג את הנוכחות הדיגיטלית שלה באמצעות בניית אתר תדמית חדש לחלוטין. האתר החדש נועד להחליף את האתר הישן, לשמש ככלי מרכזי להגדלת מכירות ולידים, ולספק מידע מקיף ונגיש ללקוחות עסקיים וארגונים ברחבי הארץ. כמוביל הפרויקט, הייתי אחראי על כל שלבי התהליך, החל משלב התכנון והעיצוב ועד לפיתוח והטמעת התוכן.",
     tools: [
@@ -61,6 +71,8 @@ export const projects: Project[] = [
     title: "Knowledge Center",
     slug: "knowledge-center",
     // TODO(user): screenshot → assets-src/projects/knowledge-center.png, then `npm run images`
+    tagline: "מרכז הידע של צוות התמיכה בפלאקארד",
+    featured: true,
     description: "מרכז ידע פנימי לצוות התמיכה של פלאקארד, כולל בוט צ'אט וחיבור למערכת הטיקטים.",
     fullDescription: "כמי שחווה על בשרו את אתגרי התמיכה הטכנית בפלאקארד, זיהיתי הזדמנות משמעותית לשיפור היעילות והידע של הצוות. מתוך הבנה עמוקה של נקודות הכאב והצורך הברור בכלי מרכזי, לקחתי יוזמה ליצור את Knowledge Center - מערכת ניהול ידע פנימית שנועדה להעצים את נציגי התמיכה, הן החדשים והן הוותיקים. פרויקט זה, שהובלתי ועיצבתי באופן מלא, הוא דוגמה להגדלת ראש שהביאה ערך משמעותי לארגון כולו.",
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design" ,"Python" ],
@@ -77,6 +89,7 @@ export const projects: Project[] = [
     title: "Docs.pelecard",
     slug: "docs-pelecard",
     // TODO(user): screenshot → assets-src/projects/docs-pelecard.png, then `npm run images`
+    tagline: "מרכז המפתחים של פלאקארד",
     description: "מרכז מפתחים עם תיעוד API, דוגמאות קוד ומדריכי הטמעה ללקוחות פלאקארד.",
     fullDescription: "פרויקט Docs.pelecard נועד ליצור פלטפורמה מרכזית ונגישה עבור לקוחות פלאקארד, המאפשרת להם לקבל את כל המידע הטכני הדרוש לצורך התממשקות עם פתרונות החברה, כגון API, iframe ומוצרי תוכנה נוספים. במסגרת הפרויקט, הובלתי את תהליך העיצוב והבנייה של האתר בשיתוף פעולה הדוק עם מחלקת הפיתוח, ובנוסף הייתי אחראי על יצירת והנגשת התוכן הטכני לקהל הלקוחות.",
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design" ,"Python" ],
@@ -94,6 +107,7 @@ export const projects: Project[] = [
     title: "מערכת לניהול מלאי מכשירי סליקה",
     slug: "pos-management",
     // TODO(user): screenshot → assets-src/projects/pos-management.png, then `npm run images`
+    tagline: "ניהול מלאי למחלקת הכספים",
     description: "מערכת ווב פנימית ב-React ו-Supabase לניהול מלאי מכשירי סליקה עבור מחלקת הכספים.",
     fullDescription: "פרויקט זה עסק בפיתוח ובנייה של מערכת לניהול מלאי מכשירי סליקה עבור חברת פלאקארד. הצורך במערכת עלה ישירות מהשטח, כאשר מחלקת הכספים נתקלה בקשיים משמעותיים בניהול המלאי הקיים בשל היעדר פתרון ממוחשב. הובלתי וניהלתי את הפרויקט במלואו, החל משלב אפיון הצרכים ועד לעיצוב ופיתוח הפתרון המלא.",
     technologies: ["React", "Supabase", "TypeScript", "AWS"],
@@ -111,6 +125,7 @@ export const projects: Project[] = [
     slug: "tripy",
     // TODO(user): screenshot → assets-src/projects/tripy.png, then `npm run images`
     // TODO(user): solutionText / resultsText are empty; fill them in or remove this project
+    tagline: "אפליקציית תכנון טיולים",
     description: "אפליקציית תכנון טיולים עם בונה מסלולים, מידע על יעדים ואטרקציות.",
     fullDescription: "Tripy הוא אפליקציית תכנון טיולים המאפשרת למשתמשים ליצור מסלולי טיול מותאמים אישית. האפליקציה כוללת מידע מקיף על יעדים, אטרקציות, מסעדות ומלונות, וכן כלי תכנון אינטראקטיבי המאפשר למשתמשים לארגן את הביקור שלהם לפי ימים ושעות.",
     technologies: ["React Native", "Firebase", "Google Maps API", "Node.js", "Express"],

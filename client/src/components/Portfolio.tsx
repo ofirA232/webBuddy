@@ -1,179 +1,217 @@
 import { useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Section } from "./section.js";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { projects } from "@/data/portfolioData";
+import { projects, type Project } from "@/data/portfolioData";
 import { EASE_IN_OUT, exitTransition, revealItem } from "@/lib/motion";
 import { TransitionLink } from "@/lib/viewTransition";
 import { ProjectPlaceholder } from "./ProjectPlaceholder";
 import { ResponsiveImage } from "./ResponsiveImage";
 import { Reveal } from "./motion/Reveal";
 
-type Category = 'all' | 'webDev' | 'webDesign' | 'branding' | 'seo' | 'digitalMarketing';
+type Category = Project["categories"][number];
+type Filter = Category | "all";
 
-interface CategoryInfo {
-  id: Category;
-  label: string;
-  icon: JSX.Element;
-}
+/** Single source for category names, used by both the filter row and the tag pills on each card. */
+const CATEGORY_LABELS: Record<Category, string> = {
+  webDev: "בניית אתרים",
+  webDesign: "עיצוב אתרים",
+  branding: "מיתוג",
+  seo: "קידום אתרים",
+  digitalMarketing: "שיווק דיגיטלי",
+};
 
-const categories: CategoryInfo[] = [
-  {
-    id: 'all',
-    label: 'הכל',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18" />
-      </svg>
-    )
-  },
-  {
-    id: 'webDev',
-    label: 'בניית אתרים',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18" />
-        <path d="M9 21V9" />
-      </svg>
-    )
-  },
-  {
-    id: 'webDesign',
-    label: 'עיצוב אתרים',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M16 18l6-6-6-6" />
-        <path d="M8 6l-6 6 6 6" />
-      </svg>
-    )
-  },
-  {
-    id: 'branding',
-    label: 'מיתוג',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" />
-        <line x1="16" y1="8" x2="2" y2="22" />
-        <line x1="17.5" y1="15" x2="9" y2="15" />
-      </svg>
-    )
-  },
-  {
-    id: 'seo',
-    label: 'קידום אתרים',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    )
-  },
-  {
-    id: 'digitalMarketing',
-    label: 'שיווק דיגיטלי',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M12 20v-6M6 20V10M18 20V4" />
-      </svg>
-    )
-  }
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: "all", label: "הכל" },
+  ...(Object.keys(CATEGORY_LABELS) as Category[]).map((id) => ({ id, label: CATEGORY_LABELS[id] })),
 ];
 
+/** Small uppercase category chips shown under every project. */
+function TagList({ categories }: { categories: readonly Category[] }) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {categories.map((category) => (
+        <li
+          key={category}
+          className="rounded-full bg-black/[0.06] px-3 py-1 text-[11px] font-medium tracking-wide text-black/70"
+        >
+          {CATEGORY_LABELS[category]}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ProjectMedia({ project, sizes }: { project: Project; sizes: string }) {
+  const style = { viewTransitionName: `project-${project.slug}` } as CSSProperties;
+  return project.image ? (
+    <ResponsiveImage
+      src={project.image}
+      small={project.imageSmall}
+      sizes={sizes}
+      alt=""
+      style={style}
+      className="h-full w-full object-cover object-top transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.03]"
+    />
+  ) : (
+    <ProjectPlaceholder
+      title={project.title}
+      tone="light"
+      style={style}
+      className="transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.03]"
+    />
+  );
+}
+
+/** "View case" affordance: label plus a filled circular arrow, pointing right-to-left for Hebrew. */
+function ViewCase() {
+  return (
+    <span className="mt-6 inline-flex items-center gap-3 text-[15px] text-black">
+      <span className="can-hover:group-hover:underline underline-offset-4">צפייה בפרויקט</span>
+      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-transform duration-200 ease-out-strong can-hover:group-hover:-translate-x-1">
+        <ArrowLeft size={16} aria-hidden="true" />
+      </span>
+    </span>
+  );
+}
+
+/** Full-width row: text on the reading side, a large media panel opposite it. */
+function FeaturedProject({ project }: { project: Project }) {
+  return (
+    <Reveal as="li" className="border-t border-black/10 py-12 md:py-20">
+      <TransitionLink
+        to={`/project/${project.slug}`}
+        className="group grid grid-cols-1 items-start gap-8 md:grid-cols-2 md:gap-14 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+      >
+        <div className="order-2 flex h-full flex-col md:order-1">
+          <h3 className="text-3xl font-light leading-tight tracking-tight text-black md:text-[42px] md:leading-[1.1]">
+            {project.title}
+          </h3>
+          <p className="mt-5 max-w-prose text-base leading-relaxed text-black/70 line-clamp-[8]">
+            {project.fullDescription || project.description}
+          </p>
+          <ViewCase />
+          <div className="mt-8 md:mt-auto md:pt-10">
+            <TagList categories={project.categories} />
+          </div>
+        </div>
+
+        <div className="order-1 aspect-[3/2] w-full overflow-hidden rounded bg-[#efefef] md:order-2">
+          <ProjectMedia project={project} sizes="(min-width: 768px) 50vw, 100vw" />
+        </div>
+      </TransitionLink>
+    </Reveal>
+  );
+}
+
+/** Grid card: media, name, one-line tagline, category chips. */
+function GridProject({ project }: { project: Project }) {
+  return (
+    <TransitionLink
+      to={`/project/${project.slug}`}
+      className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+    >
+      <div className="aspect-[16/10] w-full overflow-hidden rounded bg-[#efefef]">
+        <ProjectMedia project={project} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
+      </div>
+      <h3 className="mt-4 text-lg font-bold text-black">{project.title}</h3>
+      {(project.tagline || project.description) && (
+        <p className="mt-1 text-[15px] leading-snug text-black/55 line-clamp-2">
+          {project.tagline || project.description}
+        </p>
+      )}
+      <div className="mt-3">
+        <TagList categories={project.categories} />
+      </div>
+    </TransitionLink>
+  );
+}
+
 export function Portfolio() {
-  const [selectedCategory, setSelectedCategory] = useState<Category>('all');
+  const [selected, setSelected] = useState<Filter>("all");
   const reduce = useReducedMotion() ?? false;
 
-  const filteredProjects = selectedCategory === 'all'
-    ? projects
-    : projects.filter(project => project.categories.includes(selectedCategory));
+  const matching =
+    selected === "all" ? projects : projects.filter((p) => p.categories.includes(selected));
+  const featured = matching.filter((p) => p.featured);
+  const rest = matching.filter((p) => !p.featured);
 
   return (
-    <Section id="projects" className="bg-background py-8 sm:py-12 md:py-24">
-      <div className="container mx-auto px-4" dir="rtl">
-        <Reveal className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-6">הפרויקטים שלי</h2>
-          <p className="text-[1rem] md:text-[1.125rem] text-gray-300 leading-relaxed">
+    // A white band inside the dark site: the contrast itself is what makes the work stand out.
+    <section id="projects" className="bg-white text-black" dir="rtl">
+      <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl font-light leading-tight tracking-tight md:text-6xl">הפרויקטים שלי</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-black/65 md:text-lg">
             תיק העבודות שלי משקף את עומק המומחיות שלי ואת האמון שלקוחותי נותנים בי.
             כל פרויקט מדגים מחויבות למצוינות בעיצוב, טכנולוגיות מתקדמות ותוצאות מדידות.
           </p>
         </Reveal>
 
-        {/* Categories filter: colour change only (frequent toggle), press feedback on the chip */}
-        <Reveal delay={0.1} className="flex flex-wrap justify-center gap-2 mb-6 sm:mb-8 md:mb-12">
+        {/* Filter row: the selected chip is a solid black pill, the rest are plain text. */}
+        <Reveal delay={0.1} className="mt-12 flex flex-wrap justify-center gap-x-2 gap-y-2 md:mt-16">
           <div className="contents" role="group" aria-label="סינון לפי קטגוריה">
-            {categories.map((category) => {
-              const selected = selectedCategory === category.id;
+            {FILTERS.map((filter) => {
+              const isSelected = selected === filter.id;
               return (
                 <button
-                  key={category.id}
+                  key={filter.id}
                   type="button"
-                  onClick={() => setSelectedCategory(category.id)}
-                  aria-pressed={selected}
+                  onClick={() => setSelected(filter.id)}
+                  aria-pressed={isSelected}
                   className={cn(
-                    "pressable inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm border",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
-                    selected
-                      ? "bg-white text-black border-white"
-                      : "bg-[#1a1a1a] text-gray-300 border-[#333333] can-hover:hover:bg-[#2a2a2a] can-hover:hover:text-white"
+                    "pressable rounded-full px-5 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+                    isSelected
+                      ? "bg-black font-medium text-white"
+                      : "text-black/50 can-hover:hover:text-black",
                   )}
                 >
-                  {category.icon}
-                  <span>{category.label}</span>
+                  {filter.label}
                 </button>
               );
             })}
           </div>
         </Reveal>
 
-        {/* Projects grid: staggered reveal on first view; filter changes animate exits, entries and layout */}
-        {filteredProjects.length === 0 ? (
-          <p className="text-center text-gray-500 py-12">אין עדיין פרויקטים בקטגוריה זו.</p>
+        {matching.length === 0 ? (
+          <p className="py-24 text-center text-black/50">אין עדיין פרויקטים בקטגוריה זו.</p>
         ) : (
-          <Reveal stagger={0.04} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <AnimatePresence mode="popLayout" initial={false}>
-              {filteredProjects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  variants={revealItem(reduce)}
-                  exit={{ opacity: 0, scale: reduce ? 1 : 0.97, transition: exitTransition }}
-                  transition={{ layout: { duration: reduce ? 0 : 0.25, ease: EASE_IN_OUT } }}
-                >
-                  <TransitionLink
-                    to={`/project/${project.slug}`}
-                    className="pressable-card group block overflow-hidden rounded-lg border border-[#262626] bg-[#0d0d0d] can-hover:hover:border-[#444444] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                  >
-                    <div className="aspect-[16/9] w-full overflow-hidden bg-[#161616]">
-                      {project.image ? (
-                        <ResponsiveImage
-                          src={project.image}
-                          small={project.imageSmall}
-                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                          alt=""
-                          style={{ viewTransitionName: `project-${project.slug}` } as CSSProperties}
-                          className="h-full w-full object-cover object-top transition-transform duration-200 ease-out-strong can-hover:group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <ProjectPlaceholder
-                          title={project.title}
-                          className="transition-transform duration-200 ease-out-strong can-hover:group-hover:scale-[1.03]"
-                          style={{ viewTransitionName: `project-${project.slug}` } as CSSProperties}
-                        />
-                      )}
-                    </div>
-                    <div className="p-4 sm:p-5">
-                      <h3 className="text-base sm:text-lg font-bold text-white mb-1">{project.title}</h3>
-                      <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{project.description}</p>
-                    </div>
-                  </TransitionLink>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </Reveal>
+          <>
+            {featured.length > 0 && (
+              <ul className="mt-12 md:mt-16">
+                {featured.map((project) => (
+                  <FeaturedProject key={project.id} project={project} />
+                ))}
+              </ul>
+            )}
+
+            {rest.length > 0 && (
+              <Reveal
+                stagger={0.04}
+                as="ul"
+                className={cn(
+                  "grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3",
+                  featured.length > 0 ? "border-t border-black/10 pt-12 md:pt-20" : "mt-12 md:mt-16",
+                )}
+              >
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {rest.map((project) => (
+                    <motion.li
+                      key={project.id}
+                      layout
+                      variants={revealItem(reduce)}
+                      exit={{ opacity: 0, scale: reduce ? 1 : 0.97, transition: exitTransition }}
+                      transition={{ layout: { duration: reduce ? 0 : 0.25, ease: EASE_IN_OUT } }}
+                    >
+                      <GridProject project={project} />
+                    </motion.li>
+                  ))}
+                </AnimatePresence>
+              </Reveal>
+            )}
+          </>
         )}
       </div>
-    </Section>
+    </section>
   );
 }
