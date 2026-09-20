@@ -27,13 +27,15 @@ const ProjectDetail = () => {
 
   return (
     <div className="container mx-auto py-12 px-4 min-h-screen">
+      {/* Steps back in history so the projects grid returns at the scroll position it was left at. */}
       <TransitionLink
-        to="/"
+        to="/#projects"
         direction="back"
+        historyBack
         className="pressable inline-flex items-center gap-2 text-white mb-8 can-hover:hover:text-gray-300"
       >
         <ArrowRight size={20} aria-hidden="true" />
-        <span>חזרה לדף הבית</span>
+        <span>חזרה לפרויקטים</span>
       </TransitionLink>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

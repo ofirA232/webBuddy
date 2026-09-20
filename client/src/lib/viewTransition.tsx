@@ -7,6 +7,12 @@ type DocumentWithVT = Document & { startViewTransition?: (update: () => void) =>
 /** Which way the page sweep runs. "back" mirrors it. */
 export type NavDirection = "forward" | "back";
 
+/** True when there is an earlier entry in this tab's in-app history. */
+export function hasHistoryToGoBack() {
+  const state = window.history.state as { idx?: number } | null;
+  return (state?.idx ?? 0) > 0;
+}
+
 /**
  * navigate() wrapped in the View Transitions API when the browser supports it.
  * The animation itself lives in index.css (::view-transition-new(root)); here we only
@@ -32,7 +38,14 @@ export function useViewTransitionNavigate() {
   );
 }
 
-type TransitionLinkProps = LinkProps & { direction?: NavDirection };
+type TransitionLinkProps = LinkProps & {
+  direction?: NavDirection;
+  /**
+   * Step back through history instead of pushing a new entry, so the previous page
+   * returns at the scroll position it was left at. Falls back to `to` on a fresh tab.
+   */
+  historyBack?: boolean;
+};
 
 /** A react-router <Link> that navigates through a page transition on plain left clicks. */
 export function TransitionLink({
@@ -40,8 +53,10 @@ export function TransitionLink({
   onClick,
   target,
   direction = "forward",
+  historyBack = false,
   ...rest
 }: TransitionLinkProps) {
+  const navigate = useNavigate();
   const vtNavigate = useViewTransitionNavigate();
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -58,6 +73,12 @@ export function TransitionLink({
       return;
     }
     event.preventDefault();
+
+    if (historyBack && hasHistoryToGoBack()) {
+      // PageTransitions animates this one, because it arrives as a popstate.
+      navigate(-1);
+      return;
+    }
     vtNavigate(to, direction);
   };
 
