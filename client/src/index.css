@@ -95,6 +95,12 @@
   animation-delay: 120ms;
 }
 
+/* Hold the hero's entrance while the opening title is on screen, so it plays on handover. */
+:root[data-intro="running"] .hero-item,
+:root[data-intro="running"] .hero-photo {
+  animation-play-state: paused;
+}
+
 /* ---------- Hero aurora background (HeroBackground.tsx) ---------- */
 @keyframes aurora-drift {
   0%,

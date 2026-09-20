@@ -10,12 +10,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WebDevelopment from './pages/WebDevelopment';
 import { PageTransitions } from "@/lib/pageTransitions";
+import { IntroScreen } from "@/components/IntroScreen";
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <IntroScreen />
         <Router>
           <PageTransitions />
           <div className="min-h-screen flex flex-col">
