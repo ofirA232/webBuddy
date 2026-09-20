@@ -11,13 +11,10 @@ export interface Project {
   imageSmall?: string;
   /** One short line under the title in the projects grid (what the client is, in a few words). */
   tagline?: string;
-  /** Card teaser, and the paragraph in a featured row when there is no fullDescription. */
+  /** Card teaser, also used on the project page. */
   description: string;
-  /**
-   * Featured projects get a full-width row at the top of the projects section;
-   * everything else goes into the grid below. Keep this to 2–3 projects.
-   */
-  featured?: boolean;
+  /** Optional client logo/mark, centred over the card image. */
+  logo?: string;
   fullDescription?: string;
   technologies?: string[];
   challengeTitle?: string;
@@ -45,7 +42,6 @@ export const projects: Project[] = [
     image: pelecardImage,
     imageSmall: pelecardImageSmall,
     tagline: "חברת הסליקה המובילה בישראל",
-    featured: true,
     description: "אתר תדמית חדש לחברת הסליקה המובילה בישראל: אפיון, עיצוב, בנייה והעברה של יותר מ-100 עמודי תוכן.",
     fullDescription: "פלאקארד, חברה מובילה בתחום פתרונות הסליקה בישראל, פנתה אלי במטרה לשדרג את הנוכחות הדיגיטלית שלה באמצעות בניית אתר תדמית חדש לחלוטין. האתר החדש נועד להחליף את האתר הישן, לשמש ככלי מרכזי להגדלת מכירות ולידים, ולספק מידע מקיף ונגיש ללקוחות עסקיים וארגונים ברחבי הארץ. כמוביל הפרויקט, הייתי אחראי על כל שלבי התהליך, החל משלב התכנון והעיצוב ועד לפיתוח והטמעת התוכן.",
     tools: [
@@ -72,7 +68,6 @@ export const projects: Project[] = [
     slug: "knowledge-center",
     // TODO(user): screenshot → assets-src/projects/knowledge-center.png, then `npm run images`
     tagline: "מרכז הידע של צוות התמיכה בפלאקארד",
-    featured: true,
     description: "מרכז ידע פנימי לצוות התמיכה של פלאקארד, כולל בוט צ'אט וחיבור למערכת הטיקטים.",
     fullDescription: "כמי שחווה על בשרו את אתגרי התמיכה הטכנית בפלאקארד, זיהיתי הזדמנות משמעותית לשיפור היעילות והידע של הצוות. מתוך הבנה עמוקה של נקודות הכאב והצורך הברור בכלי מרכזי, לקחתי יוזמה ליצור את Knowledge Center - מערכת ניהול ידע פנימית שנועדה להעצים את נציגי התמיכה, הן החדשים והן הוותיקים. פרויקט זה, שהובלתי ועיצבתי באופן מלא, הוא דוגמה להגדלת ראש שהביאה ערך משמעותי לארגון כולו.",
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design" ,"Python" ],
