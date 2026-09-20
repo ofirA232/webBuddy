@@ -148,7 +148,8 @@
 
 /* ---------- Page transitions (lib/viewTransition.tsx) ----------
  * The incoming page sweeps over the outgoing one behind a soft radial mask.
- * The old page never animates; it simply sits there and gets covered.
+ * On a site this dark a mask alone reveals black over black and reads as nothing,
+ * so the pages also move: the old one recedes while the new one settles into place.
  * Registering --wipe as a percentage is what makes the gradient animatable.
  */
 @property --wipe {
@@ -175,12 +176,45 @@
   }
 }
 
+/* Leaving: drift away from the incoming edge and dim. Quicker than the entrance. */
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(var(--page-shift, 2%) * -1)) scale(0.985);
+  }
+}
+
+/* Arriving: settle in from the edge the wipe comes from. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--page-shift, 2%));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+:root {
+  /* Positive is the RTL start edge: the right. Flipped when navigating back. */
+  --page-shift: 2%;
+}
+
+:root[data-nav-direction="back"] {
+  --page-shift: -2%;
+}
+
 ::view-transition-old(root) {
-  animation: none;
+  animation: page-exit 200ms var(--ease-out) both;
 }
 
 ::view-transition-new(root) {
-  animation: page-fade-in 250ms linear both;
+  animation: page-enter 320ms var(--ease-out) both;
 }
 
 @supports (mask-image: radial-gradient(#000, #0000)) or (-webkit-mask-image: radial-gradient(#000, #0000)) {
@@ -189,7 +223,9 @@
     /* RTL: forward navigation sweeps in from the start edge, i.e. the right. */
     mask-image: radial-gradient(ellipse var(--wipe) 165% at 108% 50%, #000 68%, transparent 100%);
     mask-repeat: no-repeat;
-    animation: page-wipe-in 250ms linear forwards;
+    /* The sweep uncovers the page while the page itself settles in. */
+    animation: page-wipe-in 320ms var(--ease-out) forwards,
+      page-enter 320ms var(--ease-out) both;
   }
 
   /* Going back reverses the sweep. */
@@ -222,10 +258,13 @@
   .pressable-card:active {
     transform: none;
   }
-  /* No sweep; the new page just fades in. */
+  /* No sweep and no movement; the pages just cross-fade. */
   ::view-transition-new(root),
   :root[data-nav-direction="back"]::view-transition-new(root) {
     mask-image: none;
     animation: page-fade-in 200ms var(--ease-out) both;
+  }
+  ::view-transition-old(root) {
+    animation: page-fade-in 200ms var(--ease-out) reverse both;
   }
 }
