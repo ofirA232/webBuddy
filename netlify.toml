@@ -1,0 +1,27 @@
+# Netlify serves this site as static files. The Express server in server/ is not used here:
+# nothing in the client calls /api, and the contact form talks to EmailJS from the browser.
+
+[build]
+  # Only the client build. `npm run build` would also bundle the unused Express server,
+  # which is dead weight here and one more thing that can fail the deploy.
+  command = "npm run build:static"
+  # Vite writes the site to dist/public, not dist. Pointing at dist is what produces
+  # Netlify's "Page not found" page: there is no index.html at that level.
+  publish = "dist/public"
+
+[build.environment]
+  # vite.config.ts uses import.meta.dirname, which needs Node 20.11 or newer.
+  NODE_VERSION = "22"
+
+# Client-side routing: every unknown path has to be answered with the app shell,
+# or a refresh on /project/<slug> returns a 404 from Netlify instead of the page.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Vite fingerprints everything under /assets, so those files can be cached forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
