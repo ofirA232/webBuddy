@@ -26,6 +26,8 @@ export function PageTransitions() {
   const positions = useRef(new Map<string, number>());
   const finishTransition = useRef<(() => void) | null>(null);
   const historyIndex = useRef(currentHistoryIndex());
+  /** The page currently on screen, to tell a real page change from a jump within it. */
+  const committedPath = useRef(location.pathname);
 
   // Take over from the browser, which would otherwise restore scroll at the wrong moment.
   useEffect(() => {
@@ -51,6 +53,11 @@ export function PageTransitions() {
       const direction = nextIndex < historyIndex.current ? "back" : "forward";
       historyIndex.current = nextIndex;
 
+      // Chrome also fires popstate for a jump to an anchor on the same page, and for Back
+      // after one. That is a scroll, not a page change: sweeping the page for it froze the
+      // screen mid-scroll, so a smooth jump to a section landed in one hard cut.
+      if (window.location.pathname === committedPath.current) return;
+
       const doc = document as DocumentWithVT;
       if (!doc.startViewTransition) return;
 
@@ -75,12 +82,16 @@ export function PageTransitions() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  // Restore the scroll position before the transition paints the new page.
+  // Put the new page in position before the transition paints it.
   useLayoutEffect(() => {
     historyIndex.current = currentHistoryIndex();
+    committedPath.current = location.pathname;
     if (!location.hash) {
       const saved = navigationType === "POP" ? positions.current.get(location.key) : undefined;
-      window.scrollTo(0, saved ?? 0);
+      // "instant", not "auto": html has scroll-behavior: smooth, and "auto" defers to it.
+      // A smooth scroll here plays out on the new page, so a project opened from the grid
+      // was shown at its bottom and then visibly rolled up to the top.
+      window.scrollTo({ top: saved ?? 0, left: 0, behavior: "instant" });
     }
     finishTransition.current?.();
   }, [location.key, location.hash, navigationType]);

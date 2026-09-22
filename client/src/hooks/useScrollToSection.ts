@@ -23,7 +23,8 @@ export const useScrollToSection = () => {
     if (!target) return;
     // Gliding there is the point when we are already on the page. Arriving from another
     // page should just be in position, with no scroll animation under the page transition.
-    target.scrollIntoView({ behavior: arrivedOnThisPage.current ? 'smooth' : 'auto' });
+    // "instant", not "auto": auto defers to the smooth scroll-behavior set on html.
+    target.scrollIntoView({ behavior: arrivedOnThisPage.current ? 'smooth' : 'instant' });
     arrivedOnThisPage.current = true;
   }, [location.key, location.hash]);
 };

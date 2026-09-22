@@ -123,7 +123,7 @@ export function IntroScreen() {
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
     document.documentElement.dataset.intro = "running";
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     return () => {
       document.body.style.overflow = overflow;
       document.documentElement.removeAttribute("data-intro");
