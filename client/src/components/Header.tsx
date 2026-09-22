@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useLocation } from "react-router-dom";
 import { site } from "@/data/site";
 // Header links navigate through the page sweep, same as the project cards.
@@ -41,7 +41,12 @@ const Header = () => {
     }`;
 
   return (
-    <header className="border-b border-[#333333] sticky top-0 z-50 bg-black">
+    // Named for the View Transitions API so it is lifted out of the page sweep: the header
+    // stays put while only the content underneath changes (see index.css).
+    <header
+      className="border-b border-[#333333] sticky top-0 z-50 bg-black"
+      style={{ viewTransitionName: "site-header" } as CSSProperties}
+    >
       <div className="px-4 sm:px-6 lg:px-8 relative z-50 bg-black py-3 sm:py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-2 sm:gap-3">

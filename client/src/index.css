@@ -251,6 +251,20 @@
   animation: page-enter 320ms var(--ease-out) both;
 }
 
+/* The header is the frame, not the content: it must not move while the page changes under
+ * it, or every project page feels like a fresh load. It is captured on its own (see
+ * Header.tsx), the outgoing copy is dropped, and the incoming one appears in place.
+ * Showing both would also double its brightness, because the two copies are blended with
+ * plus-lighter by default. */
+::view-transition-group(site-header),
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
 @supports (mask-image: radial-gradient(#000, #0000)) or (-webkit-mask-image: radial-gradient(#000, #0000)) {
   ::view-transition-new(root) {
     --wipe: 0%;
