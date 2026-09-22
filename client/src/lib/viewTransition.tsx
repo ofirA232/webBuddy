@@ -1,6 +1,13 @@
 import { useCallback, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
-import { Link, useNavigate, type LinkProps, type NavigateOptions, type To } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  type LinkProps,
+  type NavigateOptions,
+  type To,
+} from "react-router-dom";
 
 type DocumentWithVT = Document & { startViewTransition?: (update: () => void) => unknown };
 
@@ -11,6 +18,12 @@ export type NavDirection = "forward" | "back";
 export function hasHistoryToGoBack() {
   const state = window.history.state as { idx?: number } | null;
   return (state?.idx ?? 0) > 0;
+}
+
+/** The path part of a `to`, ignoring any hash. */
+function pathnameOf(to: To) {
+  if (typeof to !== "string") return to.pathname ?? "";
+  return to.split("#")[0] || "/";
 }
 
 /**
@@ -58,6 +71,7 @@ export function TransitionLink({
 }: TransitionLinkProps) {
   const navigate = useNavigate();
   const vtNavigate = useViewTransitionNavigate();
+  const location = useLocation();
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
@@ -79,6 +93,14 @@ export function TransitionLink({
       navigate(-1);
       return;
     }
+
+    // Jumping to a section of the page we are already on is a scroll, not a page change.
+    // Sweeping the whole page for it would promise something that never happens.
+    if (pathnameOf(to) === location.pathname) {
+      navigate(to);
+      return;
+    }
+
     vtNavigate(to, direction);
   };
 
