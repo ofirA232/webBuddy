@@ -149,6 +149,125 @@
   }
 }
 
+/* ---------- Contact section (ContactSection.tsx) ----------
+ * A planet horizon: a huge circle whose crest shows at the top of the section, with a
+ * bright rim and bloom above it, and a soft glow behind the form.
+ * The accent follows the site's red. For the reference's blue, set --accent to 30 160 255
+ * and --accent-soft to 110 190 255.
+ */
+.contact-section {
+  --accent: 210 38 38;
+  --accent-soft: 255 92 92;
+}
+
+/* The bloom rises well above the rim. Fading the whole backdrop in from the section's top
+ * edge lets it grow out of the black above, instead of being cut off in a hard line. */
+.contact-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 150px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 150px);
+}
+
+.contact-horizon {
+  position: absolute;
+  left: 50%;
+  /* Low enough that the fade above has finished before the rim. */
+  top: 160px;
+  width: max(170vw, 1600px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  pointer-events: none;
+  /* The planet itself: black, with a faint atmosphere just inside the rim. */
+  background: radial-gradient(
+    closest-side,
+    #000 93%,
+    rgb(var(--accent) / 0.14) 99%,
+    rgb(var(--accent) / 0) 100%
+  );
+  /* The rim, then a bloom rising off it. */
+  box-shadow:
+    0 0 0 1.5px rgb(var(--accent-soft) / 0.75),
+    0 -6px 28px rgb(var(--accent) / 0.55),
+    0 -36px 110px rgb(var(--accent) / 0.32),
+    0 -110px 240px rgb(var(--accent) / 0.18);
+}
+
+.contact-glow {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: min(1000px, 140vw);
+  height: 760px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--accent) / 0.13), transparent);
+}
+
+.contact-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(1px 1px at 8% 44%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 16% 71%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 23% 36%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 29% 88%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 37% 54%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 49%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 71% 78%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 39%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 84% 63%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 91% 47%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 95% 82%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 4% 86%, #fff 50%, transparent 51%);
+}
+
+.contact-eyebrow {
+  color: rgb(var(--accent-soft));
+}
+
+/* Focus is a colour change only; fields are touched too often to animate. */
+.contact-input:focus {
+  outline: none;
+  border-color: rgb(var(--accent-soft) / 0.6);
+  box-shadow: 0 0 0 3px rgb(var(--accent) / 0.22);
+}
+
+.contact-switch[data-state="checked"] {
+  background-color: rgb(var(--accent));
+}
+
+.contact-submit {
+  background-color: rgb(var(--accent));
+  box-shadow: 0 10px 30px -10px rgb(var(--accent) / 0.75);
+  transition: transform 160ms var(--ease-out), filter 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact-submit:hover:not(:disabled) {
+    filter: brightness(1.12);
+  }
+}
+
+.contact-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.contact-submit:focus-visible {
+  outline: 2px solid rgb(var(--accent-soft));
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-submit:active:not(:disabled) {
+    transform: none;
+  }
+}
+
 /* ---------- Mobile menu (Header.tsx) ---------- */
 .mobile-menu-backdrop {
   opacity: 0;

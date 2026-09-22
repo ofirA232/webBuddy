@@ -1,214 +1,304 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import emailjs from '@emailjs/browser';
+import * as SwitchPrimitive from "@radix-ui/react-switch";
+import emailjs from "@emailjs/browser";
+import { cn } from "@/lib/utils";
 import { EASE_OUT, exitTransition } from "@/lib/motion";
-import { CtaButton } from "./CtaButton";
 import { Reveal } from "./motion/Reveal";
 
+const EMAILJS = {
+  serviceId: "service_sk2i8v9",
+  templateId: "template_ihb55nw",
+  publicKey: "gr9F4_3kEH2AsGWOA",
+};
+
+type FormState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+};
+
+const EMPTY: FormState = { firstName: "", lastName: "", email: "", phone: "", message: "" };
+
 const inputClass =
-  "bg-[#222222] border border-[#444444] text-white rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[#FFFFFF] text-right";
+  "contact-input h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 text-sm text-white placeholder:text-white/30";
+
+function Field({
+  id,
+  label,
+  className,
+  children,
+}: {
+  id: string;
+  label: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="mb-2 block text-[13px] font-medium text-white/90">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 const ContactSection = () => {
-  useEffect(() => {
-    emailjs.init("gr9F4_3kEH2AsGWOA");
-  }, []);
-
   const reduce = useReducedMotion() ?? false;
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: ""
-  });
-
+  const [form, setForm] = useState<FormState>(EMPTY);
+  const [wantsCall, setWantsCall] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
+  useEffect(() => {
+    emailjs.init(EMAILJS.publicKey);
+  }, []);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     setSubmitting(true);
     setError("");
 
     try {
-      const serviceId = 'service_sk2i8v9';
-      const templateId = 'template_ihb55nw';
-      const publicKey = 'gr9F4_3kEH2AsGWOA';
+      // The EmailJS template takes one name and one message, so the new fields are folded
+      // into those instead of needing the template changed.
+      await emailjs.send(
+        EMAILJS.serviceId,
+        EMAILJS.templateId,
+        {
+          from_name: `${form.firstName} ${form.lastName}`.trim(),
+          from_email: form.email,
+          from_phone: form.phone,
+          message: wantsCall ? `${form.message}\n\n— מבקש/ת שיחת היכרות טלפונית` : form.message,
+        },
+        EMAILJS.publicKey,
+      );
 
-      const templateParams = {
-        from_name: formData.name,
-        from_email: formData.email,
-        from_phone: formData.phone,
-        message: formData.message
-      };
-
-      await emailjs.send(serviceId, templateId, templateParams, publicKey);
-
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: ""
-      });
-
+      setForm(EMPTY);
+      setWantsCall(false);
       setSubmitted(true);
-
-      // Hide success message after a few seconds
-      setTimeout(() => {
-        setSubmitted(false);
-      }, 5000);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setError("אירעה שגיאה בשליחת הטופס. אנא נסה שוב מאוחר יותר.");
+      window.setTimeout(() => setSubmitted(false), 6000);
+    } catch (sendError) {
+      console.error("Error submitting form:", sendError);
+      setError("משהו השתבש בשליחה. נסה שוב בעוד רגע.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section id="contact" className="py-8 sm:py-12">
-      <Reveal>
-        <h2 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight pb-3 pt-5 text-right">יצירת קשר</h2>
-      </Reveal>
-      <Reveal delay={0.05} className="bg-[#111111] p-4 sm:p-6 rounded-xl border border-[#333333] w-full md:max-w-[calc(100%-200px)] lg:max-w-[calc(100%-450px)] mx-auto">
-        {/* Success is a rare, high-emotion moment: it earns a scale-in and a drawn checkmark. */}
-        <AnimatePresence mode="wait" initial={false}>
-          {submitted ? (
-            <motion.div
-              key="success"
-              role="status"
-              initial={{ opacity: 0, scale: reduce ? 1 : 0.97 }}
-              animate={{ opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE_OUT } }}
-              exit={{ opacity: 0, transition: exitTransition }}
-              className="p-4 text-center flex flex-col items-center justify-center"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-12 w-12 mb-4 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+    <section id="contact" dir="rtl" className="contact-section relative isolate overflow-hidden">
+      <div className="contact-backdrop" aria-hidden="true">
+        <div className="contact-horizon" />
+        <div className="contact-glow" />
+        <div className="contact-stars" />
+      </div>
+
+      {/* Top padding keeps the heading just inside the planet, below the rim. */}
+      <div className="container relative mx-auto max-w-7xl px-4 pb-24 pt-[15.5rem] sm:px-6 md:pb-32 md:pt-[16.5rem] lg:px-8">
+        {/* TODO(user): approve or edit this copy */}
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <p className="contact-eyebrow text-[13px] font-semibold tracking-[0.12em]">יצירת קשר</p>
+          <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-5xl">
+            בוא נעבוד יחד
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+            ספר לי קצת על הפרויקט שלך, ואחזור אליך בהקדם עם כל המידע שצריך.
+          </p>
+        </Reveal>
+
+        <Reveal
+          delay={0.08}
+          className="relative mx-auto mt-12 w-full max-w-[580px] rounded-2xl border border-white/[0.08] bg-[#0b0a0b]/85 p-5 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9)] backdrop-blur-sm sm:p-7 md:mt-14"
+        >
+          {/* Success is a rare, high-emotion moment: it earns a scale-in and a drawn checkmark. */}
+          <AnimatePresence mode="wait" initial={false}>
+            {submitted ? (
+              <motion.div
+                key="success"
+                role="status"
+                initial={{ opacity: 0, scale: reduce ? 1 : 0.97 }}
+                animate={{ opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE_OUT } }}
+                exit={{ opacity: 0, transition: exitTransition }}
+                className="flex flex-col items-center justify-center px-2 py-10 text-center"
               >
-                <motion.circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  initial={{ pathLength: reduce ? 1 : 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.1 }}
-                />
-                <motion.path
-                  d="M9 12l2 2 4-4"
-                  initial={{ pathLength: reduce ? 1 : 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, ease: EASE_OUT, delay: 0.35 }}
-                />
-              </svg>
-              <p className="text-base sm:text-lg font-medium mb-2">הודעתך התקבלה בהצלחה!</p>
-              <p className="text-sm sm:text-base text-gray-300">תודה על פנייתך. נחזור אליך בהקדם האפשרי.</p>
-            </motion.div>
-          ) : (
-            <motion.form
-              key="form"
-              className="flex flex-col gap-4"
-              onSubmit={handleSubmit}
-              dir="rtl"
-              exit={{ opacity: 0, transition: exitTransition }}
-            >
-              <AnimatePresence initial={false}>
-                {error && (
-                  <motion.div
-                    key="error"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1, transition: { duration: 0.15 } }}
-                    exit={{ opacity: 0, transition: exitTransition }}
-                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-right"
-                    role="alert"
-                  >
-                    <span className="block sm:inline">{error}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2 w-full">
-                  <label htmlFor="name" className="text-white text-sm font-medium text-right">
-                    שם מלא
-                  </label>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="contact-eyebrow mb-5 h-14 w-14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <motion.circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    initial={{ pathLength: reduce ? 1 : 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.1 }}
+                  />
+                  <motion.path
+                    d="M8.5 12.5l2.5 2.5 4.5-5"
+                    initial={{ pathLength: reduce ? 1 : 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.3, ease: EASE_OUT, delay: 0.35 }}
+                  />
+                </svg>
+                <p className="text-lg font-medium text-white">ההודעה נשלחה</p>
+                <p className="mt-2 text-sm text-white/60">תודה על הפנייה, אחזור אליך בהקדם.</p>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                onSubmit={handleSubmit}
+                exit={{ opacity: 0, transition: exitTransition }}
+                className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2"
+              >
+                <AnimatePresence initial={false}>
+                  {error && (
+                    <motion.div
+                      key="error"
+                      role="alert"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1, transition: { duration: 0.15 } }}
+                      exit={{ opacity: 0, transition: exitTransition }}
+                      className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 sm:col-span-2"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <Field id="firstName" label="שם פרטי">
                   <input
+                    id="firstName"
+                    name="firstName"
                     type="text"
-                    id="name"
-                    autoComplete="name"
+                    autoComplete="given-name"
+                    placeholder="השם הפרטי שלך"
                     className={inputClass}
-                    value={formData.name}
+                    value={form.firstName}
                     onChange={handleChange}
                     required
                   />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="email" className="text-white text-sm font-medium text-right">
-                      אימייל
+                </Field>
+
+                <Field id="lastName" label="שם משפחה">
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    autoComplete="family-name"
+                    placeholder="שם המשפחה שלך"
+                    className={inputClass}
+                    value={form.lastName}
+                    onChange={handleChange}
+                  />
+                </Field>
+
+                <Field id="email" label="אימייל">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    placeholder="you@example.com"
+                    dir="ltr"
+                    className={cn(inputClass, "text-right")}
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </Field>
+
+                <Field id="phone" label="טלפון">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    placeholder="050-0000000"
+                    dir="ltr"
+                    className={cn(inputClass, "text-right")}
+                    value={form.phone}
+                    onChange={handleChange}
+                  />
+                </Field>
+
+                <Field id="message" label="על מה נדבר?" className="sm:col-span-2">
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    placeholder="כמה מילים על הפרויקט, המטרות ולוחות הזמנים"
+                    className={cn(inputClass, "h-auto min-h-[120px] resize-y py-3 leading-relaxed")}
+                    value={form.message}
+                    onChange={handleChange}
+                    required
+                  />
+                </Field>
+
+                {/* Intro call toggle, the counterpart of the reference's "schedule a demo call". */}
+                <div className="flex items-center justify-between gap-6 pt-1 sm:col-span-2">
+                  <div>
+                    <label htmlFor="wantsCall" className="block text-sm font-semibold text-white">
+                      אשמח לשיחת היכרות
                     </label>
-                    <input
-                      type="email"
-                      id="email"
-                      autoComplete="email"
-                      className={inputClass}
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
+                    <p className="mt-1 text-[13px] leading-snug text-white/50">
+                      אחזור אליך בטלפון לתיאום שיחה קצרה.
+                    </p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="phone" className="text-white text-sm font-medium text-right">
-                      טלפון
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      autoComplete="tel"
-                      className={inputClass}
-                      value={formData.phone}
-                      onChange={handleChange}
-                      dir="ltr"
-                    />
-                  </div>
+                  <SwitchPrimitive.Root
+                    id="wantsCall"
+                    checked={wantsCall}
+                    onCheckedChange={setWantsCall}
+                    dir="rtl"
+                    className="contact-switch relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full bg-white/15 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                  >
+                    {/* RTL: off rests on the right, on travels to the left. */}
+                    <SwitchPrimitive.Thumb className="block h-5 w-5 translate-x-[-2px] rounded-full bg-white shadow-md transition-transform duration-200 ease-out-strong data-[state=checked]:translate-x-[-22px]" />
+                  </SwitchPrimitive.Root>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="message" className="text-white text-sm font-medium text-right">
-                  הודעה
-                </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  className={inputClass}
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-              </div>
-              <div className="self-start">
-                <CtaButton type="submit" size="sm" pending={submitting}>
-                  {submitting ? "שולח..." : "שליחה"}
-                </CtaButton>
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
-      </Reveal>
+
+                <div className="sm:col-span-2">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    aria-busy={submitting || undefined}
+                    className="contact-submit h-12 w-full rounded-full text-[15px] font-semibold text-white disabled:cursor-wait disabled:opacity-80"
+                  >
+                    <span
+                      className={cn(
+                        "inline-block transition-[filter,opacity] duration-200",
+                        submitting && "opacity-70 blur-[2px]",
+                      )}
+                    >
+                      {submitting ? "שולח..." : "שליחה"}
+                    </span>
+                  </button>
+                  <p className="mt-4 text-center text-[12px] text-white/40">
+                    הפרטים שלך נשארים אצלי ולא מועברים לאף אחד.
+                  </p>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </Reveal>
+      </div>
     </section>
   );
 };

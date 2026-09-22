@@ -16,12 +16,10 @@ const Home = () => {
   return (
     <>
       <Hero />
-      {/* Both sections bring their own container. */}
+      {/* Every section brings its own container; contact is full-bleed for its horizon. */}
       <SkillsSection />
       <Portfolio />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <ContactSection />
-      </div>
+      <ContactSection />
     </>
   );
 };
