@@ -232,7 +232,7 @@ const SkillsSection = () => {
                     ) : (
                       <div
                         aria-hidden="true"
-                        className="flex h-full w-full items-center justify-center bg-[radial-gradient(ellipse_at_top_right,rgba(192,31,31,0.5),transparent_62%),linear-gradient(135deg,#1a1a1a,#0a0a0a)]"
+                        className="media-placeholder--panel flex h-full w-full items-center justify-center"
                       >
                         <div className="grid grid-cols-3 gap-6 opacity-80 md:gap-8">
                           {service.icons.slice(0, 6).map((icon) => (

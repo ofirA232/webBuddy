@@ -52,7 +52,7 @@ const Hero = () => {
           <div className="order-2 md:order-1 flex flex-col justify-center gap-4 md:gap-6 text-right">
             <div className="flex flex-col gap-3 md:gap-4">
               {/* TODO(user): approve or edit this positioning copy */}
-              <p className="hero-item text-[#ff5c5c] text-sm sm:text-base font-medium tracking-wide" style={item(0)}>
+              <p className="hero-item text-[rgb(var(--accent-soft))] text-sm sm:text-base font-medium tracking-wide" style={item(0)}>
                 {site.name} · {site.role}
               </p>
               <h1

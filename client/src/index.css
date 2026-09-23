@@ -8,6 +8,13 @@
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* The red. One source for the whole site; these replace seven hard-coded values.
+     * Written as RGB channels so any of them can be used at an arbitrary opacity. */
+    --accent: 210 38 38; /* fills and glows: the submit button, the horizon rim */
+    --accent-soft: 255 92 92; /* text and small marks, light enough to read on black */
+    --accent-deep: 122 15 15; /* the dark end of a gradient */
+    --accent-warm: 255 120 60; /* the ember that keeps the aurora from going flat */
   }
 
   * {
@@ -122,6 +129,34 @@
   animation: aurora-drift 24s ease-in-out infinite;
 }
 
+.aurora-blob--core {
+  background: radial-gradient(closest-side, rgb(var(--accent) / 0.8), transparent);
+}
+
+.aurora-blob--warm {
+  background: radial-gradient(closest-side, rgb(var(--accent-warm) / 0.45), transparent);
+}
+
+.aurora-blob--deep {
+  background: radial-gradient(closest-side, rgb(var(--accent-deep) / 0.75), transparent);
+}
+
+/* Stand-ins for artwork that has not been supplied yet. */
+.media-placeholder {
+  background-image: radial-gradient(ellipse at top right, rgb(var(--accent) / 0.5), transparent 60%);
+  background-color: #141414;
+}
+
+.media-placeholder--light {
+  background-image: radial-gradient(ellipse at top right, rgb(var(--accent) / 0.12), transparent 65%);
+  background-color: #ededed;
+}
+
+.media-placeholder--panel {
+  background-image: radial-gradient(ellipse at top right, rgb(var(--accent) / 0.55), transparent 60%),
+    linear-gradient(135deg, #1a1a1a, #0a0a0a);
+}
+
 /* ---------- Services list (SkillsSection.tsx) ----------
  * The category being read fades up to full strength and thickens. Rubik is loaded as a
  * variable font, so the weight interpolates instead of snapping between cut sizes.
@@ -155,11 +190,6 @@
  * The accent follows the site's red. For the reference's blue, set --accent to 30 160 255
  * and --accent-soft to 110 190 255.
  */
-.contact-section {
-  --accent: 210 38 38;
-  --accent-soft: 255 92 92;
-}
-
 /* The bloom rises well above the rim. Fading the whole backdrop in from the section's top
  * edge lets it grow out of the black above, instead of being cut off in a hard line. */
 .contact-backdrop {

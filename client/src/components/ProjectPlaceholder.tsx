@@ -17,9 +17,7 @@ export function ProjectPlaceholder({ title, className, style, tone = "dark" }: P
       style={style}
       className={cn(
         "h-full w-full flex items-center justify-center p-6",
-        tone === "light"
-          ? "bg-[#ededed] bg-[radial-gradient(ellipse_at_top_right,rgba(192,31,31,0.12),transparent_65%)]"
-          : "bg-[#141414] bg-[radial-gradient(ellipse_at_top_right,rgba(192,31,31,0.5),transparent_60%)]",
+        tone === "light" ? "media-placeholder--light" : "media-placeholder",
         className,
       )}
     >

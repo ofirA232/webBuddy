@@ -11,23 +11,23 @@ const WebDevelopment = () => {
             <h2 className="text-2xl font-semibold mb-4">השירותים שלנו</h2>
             <ul className="space-y-3">
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
                 בניית אתרי וורדפרס מותאמים אישית
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
                 פיתוח תוספים ותבניות מותאמות
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
                 אינטגרציה עם מערכות צד שלישי
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
                 אופטימיזציה לביצועים ומהירות
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
                 תחזוקה שוטפת ותמיכה טכנית
               </li>
             </ul>
