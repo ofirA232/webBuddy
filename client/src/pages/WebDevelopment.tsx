@@ -1,4 +1,5 @@
 import React from 'react';
+import { CircleCheck } from "lucide-react";
 
 const WebDevelopment = () => {
   return (
@@ -11,23 +12,23 @@ const WebDevelopment = () => {
             <h2 className="text-2xl font-semibold mb-4">השירותים שלנו</h2>
             <ul className="space-y-3">
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full me-3"></span>
                 בניית אתרי וורדפרס מותאמים אישית
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full me-3"></span>
                 פיתוח תוספים ותבניות מותאמות
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full me-3"></span>
                 אינטגרציה עם מערכות צד שלישי
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full me-3"></span>
                 אופטימיזציה לביצועים ומהירות
               </li>
               <li className="flex items-center">
-                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full mr-3"></span>
+                <span className="w-2 h-2 bg-[rgb(var(--accent))] rounded-full me-3"></span>
                 תחזוקה שוטפת ותמיכה טכנית
               </li>
             </ul>
@@ -36,12 +37,27 @@ const WebDevelopment = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-4">היתרונות שלנו</h2>
             <div className="bg-gray-900 p-6 rounded-lg">
-              <ul className="space-y-4">
-                <li>✓ ניסיון של שנים בבניית אתרים מורכבים</li>
-                <li>✓ התאמה מושלמת למובייל ולכל סוגי המסכים</li>
-                <li>✓ אבטחה מתקדמת והגנה על האתר</li>
-                <li>✓ תמיכה וליווי לאורך כל הדרך</li>
-                <li>✓ אחסון מאובטח ומהיר</li>
+              <ul className="space-y-3">
+                <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
+                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <span>ניסיון של שנים בבניית אתרים מורכבים</span>
+                </li>
+                <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
+                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <span>התאמה מושלמת למובייל ולכל סוגי המסכים</span>
+                </li>
+                <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
+                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <span>אבטחה מתקדמת והגנה על האתר</span>
+                </li>
+                <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
+                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <span>תמיכה וליווי לאורך כל הדרך</span>
+                </li>
+                <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
+                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <span>אחסון מאובטח ומהיר</span>
+                </li>
               </ul>
             </div>
           </div>

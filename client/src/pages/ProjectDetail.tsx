@@ -59,11 +59,14 @@ const ProjectDetail = () => {
             <Reveal.Item className="mb-8 text-right">
               <div dir="rtl">
                 <h2 className="text-white text-2xl font-bold mb-4">כלים בהם השתמשתי</h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {project.tools.map((tool) => (
-                    <div key={tool.name} className="flex items-center gap-3 bg-[#111111] p-4 rounded-lg">
-                      <span className="text-2xl" aria-hidden="true">{tool.icon}</span>
-                      <span className="text-white">{tool.name}</span>
+                    <div
+                      key={tool.name}
+                      className="flex items-center gap-3 rounded-lg border border-white/[0.07] bg-white/[0.03] px-4 py-3.5"
+                    >
+                      <img src={tool.icon} alt="" className="h-6 w-6 shrink-0" />
+                      <span className="text-sm text-white/90">{tool.name}</span>
                     </div>
                   ))}
                 </div>
