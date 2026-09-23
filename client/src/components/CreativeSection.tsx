@@ -77,8 +77,8 @@ const DRIFT_RANGE: [number, number] = [0.3, 0.88];
  * the pieces stop being readable.
  */
 const COLUMN_BREAKPOINTS: [query: string, columns: number][] = [
-  ["(min-width: 1280px)", 4],
-  ["(min-width: 768px)", 3],
+  ["(min-width: 1024px)", 4],
+  ["(min-width: 640px)", 3],
 ];
 
 function useColumnCount() {

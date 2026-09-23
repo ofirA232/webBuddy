@@ -6,22 +6,24 @@
 # 16:9 ו-9:16 שניהם עובדים. הצורה נלקחת מהכתובת: /shorts/ ו-/reel/ מזוהים כאנכי,
 # כל השאר כרוחבי. לצורה אחרת מוסיפים בסוף  | 4:5  למשל.
 #
-# דוגמה (להסיר את ה-# ולהחליף בכתובות אמיתיות):
+# המספור משותף לסרטונים ולתמונות שבתיקייה, כך שהם משתלבים זה בזה בקיר.
+# הסרטונים האנכיים יושבים בתחילת הרשימה כדי שייראו גם במסכים קטנים.
 #
- UN20_TUFF-פוסט-מרובע = https://www.facebook.com/reel/1750131499562812 | 1:1
- MOSES-פוסט-מרובע = https://www.facebook.com/reel/926121526953913 | 1:1
- YOM_AHATZMAOT-שורט-קמפיין = https://www.facebook.com/reel/977027014910848 | 9:16
- LION_CRY-שורט-קמפיין = https://www.facebook.com/reel/906564119038183 | 9:16
- PURIM_POS-פוסט-מרובע = https://www.facebook.com/reel/908721218749276 | 1:1
- UN20_ENV_2-פוסט-מרובע = https://www.facebook.com/reel/2032706897658214 | 1:1
- UN20_ENV-שורט-קמפיין = https://www.facebook.com/reel/1434510341373527 | 9:16
- N86_SUMMER-פוסט-מרובע = https://www.facebook.com/reel/1143638477815228 | 1:1
- UN20-פוסט-מרובע = https://www.facebook.com/reel/717967860865999 | 1:1
- N62_1-שורט-קמפיין = https://www.facebook.com/reel/730108352824620 | 9:16
- N86_1-פוסט-מרובע = https://www.facebook.com/reel/2111248369387641 | 1:1
- OPEN_BANKING-פוסט-מרובע = https://www.facebook.com/reel/1207002030608601 | 1:1
- N62-פוסט-מרובע = https://www.facebook.com/reel/1321596799165360 | 1:1
- N6-פוסט-מרובע = https://www.facebook.com/reel/1370475833966404 | 1:1
- allPOS-פוסט-מרובע = https://www.facebook.com/reel/1066376748665651 | 1:1
-N86-פוסט-מרובע = https://www.facebook.com/reel/963241868745192 | 1:1
 # אחרי עריכה מריצים  npm run images .
+
+01-נבחרת-המסופונים-של-פלאקארד = https://www.facebook.com/reel/1066376748665651 | 1:1
+03-ביחד-ננצח = https://www.facebook.com/reel/906564119038183 | 9:16
+05-מסופון-N86-העתיד-כבר-כאן = https://www.facebook.com/reel/963241868745192 | 1:1
+07-מסופון-N62-קטן-בגודל-ענק-בביצועים = https://www.facebook.com/reel/730108352824620 | 9:16
+09-מהפכת-הבנקאות-הפתוחה = https://www.facebook.com/reel/1207002030608601 | 1:1
+11-UN20-מסופון-הסליקה-לעולם-העסקי = https://www.facebook.com/reel/1434510341373527 | 9:16
+13-UN20-עמיד-לכל-תנאי-שטח = https://www.facebook.com/reel/717967860865999 | 1:1
+15-יום-העצמאות = https://www.facebook.com/reel/977027014910848 | 9:16
+17-UN20-עמיד-בחום-ובאבק = https://www.facebook.com/reel/1750131499562812 | 1:1
+19-פסח-לוחות-הברית = https://www.facebook.com/reel/926121526953913 | 1:1
+21-פורים-מסופון-N6 = https://www.facebook.com/reel/908721218749276 | 1:1
+23-מסופון-N86-בחוף-הים = https://www.facebook.com/reel/1143638477815228 | 1:1
+25-מסופון-N6-לניידות-עסקית = https://www.facebook.com/reel/1370475833966404 | 1:1
+26-מסופון-N62-ההיברידי = https://www.facebook.com/reel/1321596799165360 | 1:1
+27-UN20-עובד-גם-כשאתה-לא-שם = https://www.facebook.com/reel/2032706897658214 | 1:1
+28-מסופון-N86-שמבין-עסקים = https://www.facebook.com/reel/2111248369387641 | 1:1

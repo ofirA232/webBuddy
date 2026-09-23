@@ -1,173 +1,173 @@
 {
-  "01-ייזום-תשלום-בקליק-אחד": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "02-עמדת-סליקה-UN20": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "03-מסופון-סליקה-N86": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "04-בדיקת-התאמות-אשראי": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "05-אימות-מוגבר-3DS": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "06-תשלום-ישיר-מהבנק": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "07-חשבונית-ירוקה": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "08-התאמות-אשראי-בענן": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "09-אימות-מוגבר-3DS-לאיקומרס": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "10-חנוכה-באנו-חושך-לגרש": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "11-חנוכה-נס-גדול-היה-פה": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "12-ברכת-שנה-טובה": {
-    "type": "image",
-    "width": 900,
-    "height": 900
-  },
-  "allPOS-פוסט-מרובע": {
+  "01-נבחרת-המסופונים-של-פלאקארד": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/1066376748665651",
     "width": 900,
     "height": 900,
     "poster": true
   },
-  "LION_CRY-שורט-קמפיין": {
+  "02-ייזום-תשלום-בקליק-אחד": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "03-ביחד-ננצח": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/906564119038183",
     "width": 506,
     "height": 900,
     "poster": true
   },
-  "MOSES-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/926121526953913",
+  "04-עמדת-סליקה-UN20": {
+    "type": "image",
     "width": 900,
-    "height": 900,
-    "poster": true
+    "height": 900
   },
-  "N6-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/1370475833966404",
-    "width": 900,
-    "height": 900,
-    "poster": true
-  },
-  "N62_1-שורט-קמפיין": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/730108352824620",
-    "width": 506,
-    "height": 900,
-    "poster": true
-  },
-  "N62-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/1321596799165360",
-    "width": 900,
-    "height": 900,
-    "poster": true
-  },
-  "N86_1-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/2111248369387641",
-    "width": 900,
-    "height": 900,
-    "poster": true
-  },
-  "N86_SUMMER-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/1143638477815228",
-    "width": 900,
-    "height": 900,
-    "poster": true
-  },
-  "N86-פוסט-מרובע": {
+  "05-מסופון-N86-העתיד-כבר-כאן": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/963241868745192",
     "width": 900,
     "height": 900,
     "poster": true
   },
-  "OPEN_BANKING-פוסט-מרובע": {
+  "06-מסופון-סליקה-N86": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "07-מסופון-N62-קטן-בגודל-ענק-בביצועים": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/730108352824620",
+    "width": 506,
+    "height": 900,
+    "poster": true
+  },
+  "08-בדיקת-התאמות-אשראי": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "09-מהפכת-הבנקאות-הפתוחה": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/1207002030608601",
     "width": 900,
     "height": 900,
     "poster": true
   },
-  "PURIM_POS-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/908721218749276",
+  "10-אימות-מוגבר-3DS": {
+    "type": "image",
     "width": 900,
-    "height": 900,
-    "poster": true
+    "height": 900
   },
-  "UN20_ENV_2-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/2032706897658214",
-    "width": 900,
-    "height": 900,
-    "poster": true
-  },
-  "UN20_ENV-שורט-קמפיין": {
+  "11-UN20-מסופון-הסליקה-לעולם-העסקי": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/1434510341373527",
     "width": 506,
     "height": 900,
     "poster": true
   },
-  "UN20_TUFF-פוסט-מרובע": {
-    "type": "facebook",
-    "videoUrl": "https://www.facebook.com/reel/1750131499562812",
+  "12-תשלום-ישיר-מהבנק": {
+    "type": "image",
     "width": 900,
-    "height": 900,
-    "poster": true
+    "height": 900
   },
-  "UN20-פוסט-מרובע": {
+  "13-UN20-עמיד-לכל-תנאי-שטח": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/717967860865999",
     "width": 900,
     "height": 900,
     "poster": true
   },
-  "YOM_AHATZMAOT-שורט-קמפיין": {
+  "14-חשבונית-ירוקה": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "15-יום-העצמאות": {
     "type": "facebook",
     "videoUrl": "https://www.facebook.com/reel/977027014910848",
     "width": 506,
+    "height": 900,
+    "poster": true
+  },
+  "16-התאמות-אשראי-בענן": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "17-UN20-עמיד-בחום-ובאבק": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1750131499562812",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "18-אימות-מוגבר-3DS-לאיקומרס": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "19-פסח-לוחות-הברית": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/926121526953913",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "20-חנוכה-באנו-חושך-לגרש": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "21-פורים-מסופון-N6": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/908721218749276",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "22-חנוכה-נס-גדול-היה-פה": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "23-מסופון-N86-בחוף-הים": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1143638477815228",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "24-ברכת-שנה-טובה": {
+    "type": "image",
+    "width": 900,
+    "height": 900
+  },
+  "25-מסופון-N6-לניידות-עסקית": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1370475833966404",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "26-מסופון-N62-ההיברידי": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1321596799165360",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "27-UN20-עובד-גם-כשאתה-לא-שם": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/2032706897658214",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "28-מסופון-N86-שמבין-עסקים": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/2111248369387641",
+    "width": 900,
     "height": 900,
     "poster": true
   }
