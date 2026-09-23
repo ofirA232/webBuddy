@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import { CreativeSection } from "@/components/CreativeSection";
 import { Portfolio } from "@/components/Portfolio";
 import SkillsSection from "@/components/SkillsSection";
 import ContactSection from "@/components/ContactSection";
@@ -19,6 +20,7 @@ const Home = () => {
       {/* Every section brings its own container; contact is full-bleed for its horizon. */}
       <SkillsSection />
       <Portfolio />
+      <CreativeSection />
       <ContactSection />
     </>
   );

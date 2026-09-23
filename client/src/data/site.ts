@@ -20,6 +20,7 @@ export const site = {
     { to: "/", label: "אודות", hash: "", section: "about" },
     { to: "/#skills", label: "כישורים", hash: "#skills", section: "skills" },
     { to: "/#projects", label: "פרויקטים", hash: "#projects", section: "projects" },
+    { to: "/#creative", label: "קריאייטיב", hash: "#creative", section: "creative" },
     { to: "/#contact", label: "יצירת קשר", hash: "#contact", section: "contact" },
   ],
 } as const;
