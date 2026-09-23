@@ -11,7 +11,7 @@ export const site = {
   url: "", // TODO(user): canonical URL, e.g. https://ofirzangi.com (used for og:url)
   email: "", // TODO(user): contact email, shown in the footer when set
   social: {
-    github: "https://github.com/ofirzangi", // TODO(user): verify this is your profile
+    github: "https://github.com/ofirA232",
     linkedin: "https://www.linkedin.com/in/ofir-zangi-abc123/",
     twitter: "", // TODO(user): leave empty to hide
   },
