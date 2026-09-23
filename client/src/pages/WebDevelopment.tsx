@@ -39,23 +39,23 @@ const WebDevelopment = () => {
             <div className="bg-gray-900 p-6 rounded-lg">
               <ul className="space-y-3">
                 <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
-                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <CircleCheck size={16} className="mt-1 text-white/45" aria-hidden="true" />
                   <span>ניסיון של שנים בבניית אתרים מורכבים</span>
                 </li>
                 <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
-                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <CircleCheck size={16} className="mt-1 text-white/45" aria-hidden="true" />
                   <span>התאמה מושלמת למובייל ולכל סוגי המסכים</span>
                 </li>
                 <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
-                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <CircleCheck size={16} className="mt-1 text-white/45" aria-hidden="true" />
                   <span>אבטחה מתקדמת והגנה על האתר</span>
                 </li>
                 <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
-                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <CircleCheck size={16} className="mt-1 text-white/45" aria-hidden="true" />
                   <span>תמיכה וליווי לאורך כל הדרך</span>
                 </li>
                 <li className="grid grid-cols-[auto_1fr] items-start gap-2.5">
-                  <CircleCheck size={16} strokeWidth={1.5} className="mt-1 text-white/45" aria-hidden="true" />
+                  <CircleCheck size={16} className="mt-1 text-white/45" aria-hidden="true" />
                   <span>אחסון מאובטח ומהיר</span>
                 </li>
               </ul>

@@ -214,7 +214,7 @@ const SkillsSection = () => {
                     <ul className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2.5">
                       {service.includes.map((item) => (
                         <li key={item} className="grid grid-cols-[auto_1fr] items-start gap-2 text-sm text-white/85">
-                          <CircleCheck size={15} strokeWidth={1.5} className="mt-[3px] text-white/45" aria-hidden="true" />
+                          <CircleCheck size={15} className="mt-[3px] text-white/45" aria-hidden="true" />
                           <span>{item}</span>
                         </li>
                       ))}

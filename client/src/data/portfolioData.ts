@@ -1,11 +1,13 @@
+import {
+  CodeXml,
+  LayoutTemplate,
+  MonitorSmartphone,
+  Plug,
+  Server,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import pelecardImage from "../assets/projects/pelecard-website.webp";
-// The site's own icon set, the same one the services section uses.
-import codeEditingIcon from "../assets/codeEditing_icon.svg";
-import responsiveIcon from "../assets/reponsive_icon.svg";
-import cmsIntegrationIcon from "../assets/CMSintegration_icon.svg";
-import hostingIcon from "../assets/HOSTING_ICON.svg";
-import apiIntegrationIcon from "../assets/api_integration_icon.svg";
-import maintenanceIcon from "../assets/WabsiteMaintaince_icon.svg";
 import pelecardImageSmall from "../assets/projects/pelecard-website@640.webp";
 
 export interface Project {
@@ -30,9 +32,12 @@ export interface Project {
   solutionText?: string;
   resultsTitle?: string;
   resultsText?: string;
-  /** Capabilities shown on the project page. `icon` is an imported SVG from the site's set. */
+  /**
+   * Capabilities shown on the project page. Lucide, so every icon shares a stroke weight
+   * and a grid; the old set mixed weights and baked labels into the artwork.
+   */
   tools?: {
-    icon: string;
+    icon: LucideIcon;
     name: string;
   }[];
   role?: string;
@@ -53,12 +58,12 @@ export const projects: Project[] = [
     description: "אתר תדמית חדש לחברת הסליקה המובילה בישראל: אפיון, עיצוב, בנייה והעברה של יותר מ-100 עמודי תוכן.",
     fullDescription: "פלאקארד, חברה מובילה בתחום פתרונות הסליקה בישראל, פנתה אלי במטרה לשדרג את הנוכחות הדיגיטלית שלה באמצעות בניית אתר תדמית חדש לחלוטין. האתר החדש נועד להחליף את האתר הישן, לשמש ככלי מרכזי להגדלת מכירות ולידים, ולספק מידע מקיף ונגיש ללקוחות עסקיים וארגונים ברחבי הארץ. כמוביל הפרויקט, הייתי אחראי על כל שלבי התהליך, החל משלב התכנון והעיצוב ועד לפיתוח והטמעת התוכן.",
     tools: [
-      { icon: codeEditingIcon, name: "פיתוח בקוד" },
-      { icon: responsiveIcon, name: "רספונסיביות" },
-      { icon: cmsIntegrationIcon, name: "אינטגרציית CMS" },
-      { icon: hostingIcon, name: "אחסון אתרים" },
-      { icon: apiIntegrationIcon, name: "אינטגרציית API" },
-      { icon: maintenanceIcon, name: "תחזוקת אתרים" }
+      { icon: CodeXml, name: "פיתוח בקוד" },
+      { icon: MonitorSmartphone, name: "רספונסיביות" },
+      { icon: LayoutTemplate, name: "אינטגרציית CMS" },
+      { icon: Server, name: "אחסון אתרים" },
+      { icon: Plug, name: "אינטגרציית API" },
+      { icon: Wrench, name: "תחזוקת אתרים" }
     ],
     technologies: ["WordPress", "CSS3", "JavaScript", "PHP", "Responsive Design"],
     challengeTitle: "האתגר:",

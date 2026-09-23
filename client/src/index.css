@@ -25,6 +25,7 @@
     color: #fff;
   }
 
+
   /* Firefox */
   html {
     scrollbar-color: rgb(var(--accent) / 0.75) #0a0a0a;
@@ -99,6 +100,15 @@
   .pressable-card:active {
     transform: scale(0.98);
   }
+}
+
+/* One stroke weight for every icon on the site. Lucide writes stroke-width as an attribute,
+ * which CSS overrides, so this covers icons added later too instead of repeating a prop at
+ * each call site. 1.5 sits with the light headings; the 2 Lucide ships reads heavy beside them.
+ * Deliberately outside @layer: Tailwind drops layered rules whose class it cannot find in the
+ * source, and "lucide" is only ever added at runtime. */
+svg.lucide {
+  stroke-width: 1.5;
 }
 
 /* ---------- Hero entrance (runs once on load; keyframes are fine, nothing interrupts it) ---------- */
