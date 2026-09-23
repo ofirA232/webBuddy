@@ -41,6 +41,7 @@ const GRID_COLS: Record<number, string> = {
   2: "grid-cols-2",
   3: "grid-cols-3",
   4: "grid-cols-4",
+  5: "grid-cols-5",
 };
 
 /** A column starts this far down, so its first tile clears the frame's top fade. */
@@ -50,7 +51,7 @@ const EDGE_PAD = 3;
  * Extra travel per column, so the columns do not move in lockstep and a set of pieces
  * that are all the same shape does not line up into plain rows.
  */
-const STAGGER = [0, 3.5, 1.2, 4.6];
+const STAGGER = [0, 3.5, 1.2, 4.6, 2.3];
 
 /**
  * How far a column drifts, as a share of its own height.
@@ -72,11 +73,13 @@ function driftFor(columnUnits: number, frameUnits: number, index: number): strin
 const DRIFT_RANGE: [number, number] = [0.3, 0.88];
 
 /**
- * Narrower columns fit more work on the one screen the wall gets, and keep a square
- * social post from towering over a banner beside it. Four is as far as it goes before
- * the pieces stop being readable.
+ * How much work the wall holds is columns x (frame height / column width) x OVERFLOW,
+ * so a narrower column is worth more than it looks: it is both an extra column and a
+ * shorter tile. Five at desktop width is what fits the whole set on one screen; wider
+ * columns would mean either dropping pieces or a much longer scroll to reveal them.
  */
 const COLUMN_BREAKPOINTS: [query: string, columns: number][] = [
+  ["(min-width: 1280px)", 5],
   ["(min-width: 1024px)", 4],
   ["(min-width: 640px)", 3],
 ];
