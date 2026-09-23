@@ -114,42 +114,49 @@ export const ContainerSticky = ({
 };
 ContainerSticky.displayName = "ContainerSticky";
 
-export const GalleryContainer = ({
-  children,
-  className,
-  style,
-  ...props
-}: HTMLMotionProps<"div">) => {
-  const { scrollYProgress, reduce } = useContainerScrollContext();
-  // Flat-to-upright over the first half of the runway, then settling out of the zoom.
-  const rotateX = useTransform(scrollYProgress, [0, 0.5], [75, 0]);
-  const scale = useTransform(scrollYProgress, [0.5, 0.9], [1.2, 1]);
+export const GalleryContainer = React.forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
+  ({ children, className, style, ...props }, ref) => {
+    const { scrollYProgress, reduce } = useContainerScrollContext();
+    // Flat-to-upright over the first half of the runway, then settling out of the zoom.
+    const rotateX = useTransform(scrollYProgress, [0, 0.5], [75, 0]);
+    const scale = useTransform(scrollYProgress, [0.5, 0.9], [1.2, 1]);
 
-  return (
-    <motion.div
-      className={cn("relative grid size-full grid-cols-3 gap-2 rounded-2xl", className)}
-      style={{
-        ...(reduce ? null : { rotateX, scale }),
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
-        ...style,
-      }}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-};
+    return (
+      <motion.div
+        ref={ref}
+        className={cn("relative grid size-full grid-cols-3 gap-2 rounded-2xl", className)}
+        style={{
+          ...(reduce ? null : { rotateX, scale }),
+          transformStyle: "preserve-3d",
+          perspective: "1000px",
+          ...style,
+        }}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    );
+  },
+);
 GalleryContainer.displayName = "GalleryContainer";
 
 export const GalleryCol = ({
   className,
   style,
   yRange = ["0%", "-10%"],
+  scrollRange = [0.5, 1],
   ...props
-}: HTMLMotionProps<"div"> & { yRange?: string[] }) => {
+}: HTMLMotionProps<"div"> & {
+  yRange?: string[];
+  /**
+   * The slice of the section's scroll that the drift is spread over. Ending before 1
+   * leaves the wall still at the end of the section, which is what lets the pieces the
+   * drift has just brought into frame be looked at rather than glimpsed.
+   */
+  scrollRange?: [number, number];
+}) => {
   const { scrollYProgress, reduce } = useContainerScrollContext();
-  const y = useTransform(scrollYProgress, [0.5, 1], yRange);
+  const y = useTransform(scrollYProgress, scrollRange, yRange);
 
   return (
     <motion.div

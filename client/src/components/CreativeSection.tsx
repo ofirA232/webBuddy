@@ -1,4 +1,6 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import { Play } from "lucide-react";
 
 import {
   ContainerAnimated,
@@ -10,46 +12,196 @@ import {
 } from "@/components/ui/animated-gallery";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { creativeWall, splitIntoColumns, type CreativePiece } from "@/data/creativeData";
+import { creativeWall, packColumns, type CreativePiece } from "@/data/creativeData";
 import { cn } from "@/lib/utils";
 
 /**
- * Four tiles is what fits a column at roughly 16/9 each, which is the shape the wall
- * is built around. More than this and the pieces are too small to read.
+ * How far the wall runs past the top and bottom of its frame. The columns have to
+ * overflow, or the drift uncovers empty space at one edge or the other.
  */
-const MAX_PER_COLUMN = 4;
+const OVERFLOW = 1.35;
+
+/** Fallback packing target before the frame has been measured, in column widths. */
+const FALLBACK_UNITS = 2.2;
 
 /**
- * Each column's vertical offset, as a share of its own height: the first value holds
- * until the wall is upright, the second is where it drifts to. The middle column sits
- * higher throughout, which is what stops the wall reading as a flat table.
+ * The tallest a tile may be, as a share of the frame. A piece taller than the frame
+ * can never be seen whole however far the wall drifts, so its tile is capped here and
+ * the piece is fitted inside it rather than cropped — a story or a poster keeps its
+ * whole composition, with the tile's own dark gutter either side.
  */
-const COLUMN_DRIFT: string[][] = [
-  ["-8%", "0%"],
-  ["-18%", "-10%"],
-  ["-8%", "0%"],
-];
+const TALLEST_TILE = 0.88;
 
-function Piece({ piece, index, flat }: { piece: CreativePiece; index: number; flat: boolean }) {
+/** Fallback cap before the frame has been measured (roughly a 2:3 portrait). */
+const FALLBACK_MIN_RATIO = 0.66;
+
+/** A column starts this far down, so its first tile clears the frame's top fade. */
+const EDGE_PAD = 3;
+
+/** Extra travel per column, so the columns do not move in lockstep. */
+const STAGGER = [0, 2.5, 0.8];
+
+/**
+ * How far a column drifts, as a share of its own height.
+ *
+ * The travel is what reveals the part of a column that starts below the frame, so it
+ * is derived from that column's actual packed height rather than fixed: whatever it
+ * ended up holding, it moves exactly far enough for its last tile to come into frame.
+ */
+function driftFor(columnUnits: number, frameUnits: number, index: number): string[] {
+  const overflow = Math.max(columnUnits - frameUnits, 0);
+  const travel = (overflow / columnUnits) * 100 + EDGE_PAD + STAGGER[index % STAGGER.length];
+  return [`${EDGE_PAD}%`, `-${travel.toFixed(1)}%`];
+}
+
+/**
+ * The drift finishes before the section does, so the wall holds still at the end with
+ * its last pieces in frame instead of sliding past them as it unsticks.
+ */
+const DRIFT_RANGE: [number, number] = [0.45, 0.85];
+
+/**
+ * How tall a column should be packed, expressed in multiples of its own width, so the
+ * same number works at any screen size. Measured from the rendered frame rather than
+ * assumed, because the frame is a viewport height minus whatever padding is in force.
+ */
+function useFrameMetrics(columnCount: number, gapPx: number) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [metrics, setMetrics] = useState({
+    units: FALLBACK_UNITS,
+    minRatio: FALLBACK_MIN_RATIO,
+  });
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const measure = () => {
+      // offsetWidth/Height are the untransformed box, which is what we want: the
+      // wall is measured as it is laid out, not as the 3D reveal currently shows it.
+      const { offsetWidth, offsetHeight } = element;
+      const columnWidth = (offsetWidth - gapPx * (columnCount - 1)) / columnCount;
+      if (columnWidth > 0 && offsetHeight > 0) {
+        setMetrics({
+          units: (offsetHeight * OVERFLOW) / columnWidth,
+          minRatio: columnWidth / (offsetHeight * TALLEST_TILE),
+        });
+      }
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [columnCount, gapPx]);
+
+  return { ref, ...metrics };
+}
+
+/**
+ * Plays only while the tile is on screen, and only if the visitor has not asked for
+ * less motion — a wall of looping video is exactly the thing that setting is for.
+ * `preload="none"` keeps every clip off the wire until it is actually going to play.
+ */
+function VideoTile({
+  piece,
+  reduce,
+  fitClass,
+}: {
+  piece: CreativePiece;
+  reduce: boolean;
+  fitClass: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || reduce) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Autoplay can still be refused (power saving, data saver); the poster stays.
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [reduce]);
+
+  if (reduce && !started) {
+    return (
+      <button
+        type="button"
+        onClick={() => setStarted(true)}
+        className="group relative block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        <ResponsiveImage
+          src={piece.src!}
+          small={piece.small}
+          widths={[480, 900]}
+          sizes="(min-width: 768px) 30vw, 45vw"
+          alt={piece.alt}
+          className={cn("block size-full", fitClass)}
+          loading="lazy"
+        />
+        <span className="absolute inset-0 flex items-center justify-center bg-black/40">
+          <span className="flex size-12 items-center justify-center rounded-full bg-white/90 text-black">
+            <Play className="size-5 translate-x-[1px]" aria-hidden="true" />
+          </span>
+        </span>
+        <span className="sr-only">נגן את הסרטון: {piece.alt}</span>
+      </button>
+    );
+  }
+
   return (
+    <video
+      ref={ref}
+      src={piece.video}
+      poster={piece.src}
+      muted
+      loop
+      playsInline
+      preload="none"
+      controls={reduce}
+      autoPlay={reduce && started}
+      aria-label={piece.alt}
+      className={cn("block size-full", fitClass)}
+    />
+  );
+}
+
+type WallPiece = CreativePiece & {
+  /** The tile's shape: the piece's own, unless that would not fit the frame. */
+  displayRatio: number;
+  fit: "cover" | "contain";
+};
+
+function Piece({ piece, index, reduce }: { piece: WallPiece; index: number; reduce: boolean }) {
+  const fitClass = piece.fit === "contain" ? "object-contain" : "object-cover";
+  return (
+    // Every tile is the shape of its own piece, so a banner, a square post and a story
+    // each keep their proportions instead of being cropped to a common tile.
     <div
-      className={cn(
-        "overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] shadow-lg shadow-black/40",
-        flat ? "w-full" : "min-h-0 flex-none",
-      )}
-      // In the wall every tile takes the same fixed share of the column, so a column
-      // holding two pieces shows two normal tiles rather than two stretched slabs.
-      // Flat (reduced motion) there is no frame to fill, so each tile keeps its own shape.
-      style={flat ? { aspectRatio: piece.ratio } : { height: `${100 / MAX_PER_COLUMN}%` }}
+      className="w-full flex-none overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] shadow-lg shadow-black/40"
+      style={{ aspectRatio: piece.displayRatio }}
     >
-      {piece.src ? (
+      {piece.kind === "video" && piece.video ? (
+        <VideoTile piece={piece} reduce={reduce} fitClass={fitClass} />
+      ) : piece.src ? (
         <ResponsiveImage
           src={piece.src}
           small={piece.small}
           widths={[480, 900]}
           sizes="(min-width: 768px) 30vw, 45vw"
           alt={piece.alt}
-          className={cn("block size-full", piece.fit === "contain" ? "object-contain p-2" : "object-cover")}
+          className={cn("block size-full", fitClass)}
           // The wall sits well below the fold; nothing in it is worth preloading.
           loading="lazy"
         />
@@ -68,7 +220,28 @@ export function CreativeSection() {
   const isMobile = useIsMobile();
   const reduce = useReducedMotion() ?? false;
   const columnCount = isMobile ? 2 : 3;
-  const columns = splitIntoColumns(creativeWall.slice(0, columnCount * MAX_PER_COLUMN), columnCount);
+  const gapPx = isMobile ? 8 : 12; // matches gap-2 / sm:gap-3
+
+  const { ref: gridRef, units, minRatio } = useFrameMetrics(columnCount, gapPx);
+
+  const wall: WallPiece[] = creativeWall.map((piece) => {
+    // Flat there is no frame, so nothing needs capping and nothing needs fitting.
+    const displayRatio = reduce ? piece.ratio : Math.max(piece.ratio, minRatio);
+    return {
+      ...piece,
+      displayRatio,
+      fit: displayRatio > piece.ratio ? "contain" : "cover",
+    };
+  });
+
+  // Flat, there is no frame to fill, so everything is shown rather than packed to fit.
+  const { columns, heights } = packColumns(
+    wall,
+    columnCount,
+    reduce ? Infinity : units,
+    (piece) => piece.displayRatio,
+  );
+  const frameUnits = units / OVERFLOW;
 
   return (
     // No `overflow-hidden` here: a clipping ancestor turns the sticky frame below into a
@@ -94,40 +267,34 @@ export function CreativeSection() {
         </ContainerAnimated>
         <ContainerAnimated>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
-            מעבר לקוד יש את החלק שרואים קודם: באנרים, קריאייטיב לקמפיינים, חומרים לרשתות
+            מעבר לקוד יש את החלק שרואים קודם: באנרים, סרטונים, קריאייטיב לקמפיינים
             ונכסים ויזואליים שליוו את הפרויקטים. זה מבחר מהם.
           </p>
         </ContainerAnimated>
       </ContainerStagger>
 
       <ContainerScroll className={reduce ? "relative" : "h-[300vh]"}>
-        <ContainerSticky
-          className={cn(
-            "px-4 pb-16 pt-10 sm:px-6 md:pb-24 lg:px-8",
-            reduce ? "" : "h-svh",
-          )}
-        >
+        <ContainerSticky className={cn("px-4 pb-16 pt-10 sm:px-6 md:pb-24 lg:px-8", reduce ? "" : "h-svh")}>
           <GalleryContainer
+            ref={gridRef}
             className={cn(
-              "mx-auto max-w-7xl gap-2 sm:gap-3",
+              "mx-auto max-w-7xl items-start gap-2 sm:gap-3",
               columnCount === 2 ? "grid-cols-2" : "grid-cols-3",
             )}
           >
             {columns.map((column, columnIndex) => (
               <GalleryCol
                 key={columnIndex}
-                yRange={COLUMN_DRIFT[columnIndex % COLUMN_DRIFT.length]}
-                // Taller than the frame on purpose: the wall runs past the top and bottom
-                // edges, so the drift never uncovers empty space.
-                // justify-center keeps a part-filled column sitting in the middle of the frame.
-                className={cn("gap-2 sm:gap-3", reduce ? "h-auto" : "h-[130%] justify-center")}
+                yRange={driftFor(heights[columnIndex], frameUnits, columnIndex)}
+                scrollRange={DRIFT_RANGE}
+                className="gap-2 sm:gap-3"
               >
                 {column.map((piece, i) => (
                   <Piece
                     key={piece.id}
                     piece={piece}
-                    index={columnIndex * MAX_PER_COLUMN + i}
-                    flat={reduce}
+                    index={columnIndex * 5 + i}
+                    reduce={reduce}
                   />
                 ))}
               </GalleryCol>
@@ -139,11 +306,11 @@ export function CreativeSection() {
             <>
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black to-transparent"
+                className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black to-transparent"
               />
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent"
               />
             </>
           )}
