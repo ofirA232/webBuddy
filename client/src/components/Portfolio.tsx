@@ -13,6 +13,7 @@ type Filter = Category | "all";
 
 /** Single source for category names, used by both the filter row and the tags on each card. */
 const CATEGORY_LABELS: Record<Category, string> = {
+  apps: "אפליקציות ומערכות",
   webDev: "בניית אתרים",
   webDesign: "עיצוב אתרים",
   branding: "מיתוג",
