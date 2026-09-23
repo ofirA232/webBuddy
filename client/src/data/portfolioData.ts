@@ -157,24 +157,6 @@ export const projects: Project[] = [
     categories: ['webDev', 'digitalMarketing']
   },
   {
-    id: 5,
-    title: "Tripy",
-    slug: "tripy",
-    // TODO(user): screenshot → assets-src/projects/tripy.png, then `npm run images`
-    // TODO(user): solutionText / resultsText are empty; fill them in or remove this project
-    tagline: "אפליקציית תכנון טיולים",
-    description: "אפליקציית תכנון טיולים עם בונה מסלולים, מידע על יעדים ואטרקציות.",
-    fullDescription: "Tripy הוא אפליקציית תכנון טיולים המאפשרת למשתמשים ליצור מסלולי טיול מותאמים אישית. האפליקציה כוללת מידע מקיף על יעדים, אטרקציות, מסעדות ומלונות, וכן כלי תכנון אינטראקטיבי המאפשר למשתמשים לארגן את הביקור שלהם לפי ימים ושעות.",
-    technologies: ["React Native", "Firebase", "Google Maps API", "Node.js", "Express"],
-    challengeTitle: "תכנון מסלולים חכם",
-    challengeText: "פיתחנו מערכת תכנון מסלולים חכמה המשלבת נתוני מיקום בזמן אמת, המלצות מקומיות ואופטימיזציה של זמני נסיעה. המערכת מאפשרת למשתמשים לתכנן טיולים מותאמים אישית בקלות ויעילות.",
-    solutionTitle:"הפתרון:",
-    solutionText:"",
-    resultsTitle:"תוצאות ולקחים:",
-    resultsText:"",
-    categories: ['webDesign', 'branding', 'seo']
-  },
-  {
     id: 6,
     title: "OfirBuilder",
     slug: "ofirbuilder",
