@@ -12,7 +12,7 @@ export const site = {
   email: "", // TODO(user): contact email, shown in the footer when set
   social: {
     github: "https://github.com/ofirzangi", // TODO(user): verify this is your profile
-    linkedin: "", // TODO(user): real LinkedIn profile URL
+    linkedin: "https://www.linkedin.com/in/ofir-zangi-abc123/",
     twitter: "", // TODO(user): leave empty to hide
   },
   /** `section` is the id the link points at, which is also what the header underlines. */

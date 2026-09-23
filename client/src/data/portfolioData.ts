@@ -1,4 +1,5 @@
 import {
+  BadgeCheck,
   BellRing,
   Bot,
   Brain,
@@ -11,12 +12,15 @@ import {
   LayoutTemplate,
   LineChart,
   ListChecks,
+  Mail,
   Map,
   MapPin,
   MessageSquare,
   MonitorSmartphone,
+  PenTool,
   Plug,
   Radar,
+  Search,
   Server,
   Share2,
   Shirt,
@@ -29,6 +33,8 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import liaImage from "../assets/projects/liababysteps.webp";
+import liaImageSmall from "../assets/projects/liababysteps@640.webp";
 import pelecardImage from "../assets/projects/pelecard-website.webp";
 import pelecardImageSmall from "../assets/projects/pelecard-website@640.webp";
 
@@ -290,5 +296,37 @@ export const projects: Project[] = [
       "האפליקציה כוללת ספרייה של 113 תרגילים עם דיאגרמות שרירים אינטראקטיביות, ייבוא אימון מקישור יוטיוב, זיהוי שיאים אישיים ברגע שהם נשברים, ותמונת שיתוף ממותגת שנוצרת בסוף אימון בגודל המתאים לאינסטגרם. את תמונת השיתוף ציירתי ב-Canvas בלי ספריות חיצוניות, כולל סיבוב נכון של תמונות לפי נתוני EXIF ותמיכה בטקסט מימין לשמאל. שכבת הנתונים בנויה כך שאפשר להחליף אותה, והאפליקציה רצה גם על אחסון מקומי וגם על הענן, עם העברה אוטומטית של נתונים מקומיים.",
     liveUrl: "https://lyftcode.onrender.com/",
     categories: ['apps', 'webDesign']
+  },
+  {
+    id: 10,
+    title: "בייביסטפס עם ליאה",
+    slug: "liababysteps",
+    image: liaImage,
+    imageSmall: liaImageSmall,
+    tagline: "ליווי התפתחותי לתינוקות",
+    description:
+      "אתר תדמית לעסק של סדנאות התפתחות לתינוקות: עיצוב, בנייה, שרת ותיבת מייל וקידום שוטף.",
+    fullDescription:
+      "ליאה מעבירה סדנאות ליווי התפתחותי לתינוקות, והיא פנתה אליי כדי לבנות לעסק נוכחות דיגיטלית מאפס. לקחתי את הפרויקט מקצה לקצה: אפיון ועיצוב, בנייה בוורדפרס, הקמת השרת ותיבת המייל של הדומיין, וקידום ותחזוקה שוטפים מאז. האתר מציג את הסדנאות לפי גיל התינוק, מלידה ועד עשרה חודשים, ומוביל את הגולשות לפנייה ישירה. הוא בנוי עברית תחילה ומימין לשמאל, עם שפה ויזואלית רכה שמתאימה לקהל של אימהות טריות.",
+    tools: [
+      { icon: PenTool, name: "עיצוב ומיתוג" },
+      { icon: CodeXml, name: "בנייה בוורדפרס" },
+      { icon: Server, name: "הקמת שרת" },
+      { icon: Mail, name: "תיבת מייל בדומיין" },
+      { icon: Search, name: "קידום אורגני" },
+      { icon: BadgeCheck, name: "תחזוקה שוטפת" }
+    ],
+    technologies: ["WordPress", "Elementor", "Contact Form 7", "Google Site Kit", "אחסון וניהול DNS", "תיבת מייל בדומיין"],
+    challengeTitle: "האתגר:",
+    challengeText:
+      "לעסק לא הייתה שום נוכחות דיגיטלית, והקהל שלו הוא אימהות טריות שגולשות בעיקר מהטלפון ובזמן קצר. היה צריך אתר שמסביר תוך שניות מה הסדנאות נותנות ולמי הן מתאימות, בלי להעמיס. מעבר לאתר עצמו, ליאה נזקקה לכל מה שמסביב, שרת, דומיין ותיבת מייל, בלי שיהיה לה רקע טכני לנהל אותם.",
+    solutionTitle: "הפתרון:",
+    solutionText:
+      "עיצבתי שפה ויזואלית רכה בגווני ורוד וקרם, עם צורות אורגניות וטיפוגרפיה עברית ידידותית, שמתאימה לתוכן ולקהל. את הסדנאות חילקתי לפי גיל התינוק, כך שכל אמא מזהה מיד את המסלול הרלוונטי לה. בניתי את האתר בוורדפרס עם Elementor כדי שליאה תוכל לעדכן מבצעים ותכנים בעצמה, הוספתי טופס יצירת קשר וכפתור וואטסאפ צף לפנייה מיידית, ורכיב נגישות. במקביל הקמתי את השרת, חיברתי את הדומיין והגדרתי תיבת מייל עסקית.",
+    resultsTitle: "תוצאות ולקחים:",
+    resultsText:
+      "האתר באוויר ומשמש כערוץ הפניות המרכזי של העסק, ואני ממשיך לתחזק ולקדם אותו. חיברתי אותו ל-Google Site Kit כדי שיהיו נתונים אמיתיים על התנועה ועל השאילתות, והוספתי שכבת מטמון לשיפור זמני הטעינה. הפרויקט הזה מייצג את סוג העבודה שאני הכי אוהב: לקוחה שמגיעה בלי שום תשתית, ואני מלווה אותה מהרעיון ועד שהטלפון מצלצל.",
+    liveUrl: "https://liababysteps.com/",
+    categories: ['webDesign', 'webDev', 'branding', 'seo']
   }
 ];
