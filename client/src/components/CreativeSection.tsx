@@ -11,7 +11,6 @@ import {
   GalleryContainer,
 } from "@/components/ui/animated-gallery";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { creativeWall, packColumns, type CreativePiece } from "@/data/creativeData";
 import { cn } from "@/lib/utils";
 
@@ -35,11 +34,21 @@ const TALLEST_TILE = 0.88;
 /** Fallback cap before the frame has been measured (roughly a 2:3 portrait). */
 const FALLBACK_MIN_RATIO = 0.66;
 
+/** Tailwind needs the whole class name in the source, so these cannot be built up. */
+const GRID_COLS: Record<number, string> = {
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+};
+
 /** A column starts this far down, so its first tile clears the frame's top fade. */
 const EDGE_PAD = 3;
 
-/** Extra travel per column, so the columns do not move in lockstep. */
-const STAGGER = [0, 2.5, 0.8];
+/**
+ * Extra travel per column, so the columns do not move in lockstep and a set of pieces
+ * that are all the same shape does not line up into plain rows.
+ */
+const STAGGER = [0, 3.5, 1.2, 4.6];
 
 /**
  * How far a column drifts, as a share of its own height.
@@ -59,6 +68,33 @@ function driftFor(columnUnits: number, frameUnits: number, index: number): strin
  * its last pieces in frame instead of sliding past them as it unsticks.
  */
 const DRIFT_RANGE: [number, number] = [0.45, 0.85];
+
+/**
+ * Narrower columns fit more work on the one screen the wall gets, and keep a square
+ * social post from towering over a banner beside it. Four is as far as it goes before
+ * the pieces stop being readable.
+ */
+const COLUMN_BREAKPOINTS: [query: string, columns: number][] = [
+  ["(min-width: 1280px)", 4],
+  ["(min-width: 768px)", 3],
+];
+
+function useColumnCount() {
+  const [count, setCount] = useState(3);
+
+  useEffect(() => {
+    const lists = COLUMN_BREAKPOINTS.map(([query]) => window.matchMedia(query));
+    const update = () => {
+      const match = COLUMN_BREAKPOINTS.findIndex((_, i) => lists[i].matches);
+      setCount(match === -1 ? 2 : COLUMN_BREAKPOINTS[match][1]);
+    };
+    update();
+    lists.forEach((list) => list.addEventListener("change", update));
+    return () => lists.forEach((list) => list.removeEventListener("change", update));
+  }, []);
+
+  return count;
+}
 
 /**
  * How tall a column should be packed, expressed in multiples of its own width, so the
@@ -107,10 +143,12 @@ function VideoTile({
   piece,
   reduce,
   fitClass,
+  sizes,
 }: {
   piece: CreativePiece;
   reduce: boolean;
   fitClass: string;
+  sizes: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
@@ -145,7 +183,7 @@ function VideoTile({
           src={piece.src!}
           small={piece.small}
           widths={[480, 900]}
-          sizes="(min-width: 768px) 30vw, 45vw"
+          sizes={sizes}
           alt={piece.alt}
           className={cn("block size-full", fitClass)}
           loading="lazy"
@@ -183,7 +221,17 @@ type WallPiece = CreativePiece & {
   fit: "cover" | "contain";
 };
 
-function Piece({ piece, index, reduce }: { piece: WallPiece; index: number; reduce: boolean }) {
+function Piece({
+  piece,
+  index,
+  reduce,
+  sizes,
+}: {
+  piece: WallPiece;
+  index: number;
+  reduce: boolean;
+  sizes: string;
+}) {
   const fitClass = piece.fit === "contain" ? "object-contain" : "object-cover";
   return (
     // Every tile is the shape of its own piece, so a banner, a square post and a story
@@ -193,13 +241,13 @@ function Piece({ piece, index, reduce }: { piece: WallPiece; index: number; redu
       style={{ aspectRatio: piece.displayRatio }}
     >
       {piece.kind === "video" && piece.video ? (
-        <VideoTile piece={piece} reduce={reduce} fitClass={fitClass} />
+        <VideoTile piece={piece} reduce={reduce} fitClass={fitClass} sizes={sizes} />
       ) : piece.src ? (
         <ResponsiveImage
           src={piece.src}
           small={piece.small}
           widths={[480, 900]}
-          sizes="(min-width: 768px) 30vw, 45vw"
+          sizes={sizes}
           alt={piece.alt}
           className={cn("block size-full", fitClass)}
           // The wall sits well below the fold; nothing in it is worth preloading.
@@ -217,10 +265,9 @@ function Piece({ piece, index, reduce }: { piece: WallPiece; index: number; redu
 }
 
 export function CreativeSection() {
-  const isMobile = useIsMobile();
+  const columnCount = useColumnCount();
   const reduce = useReducedMotion() ?? false;
-  const columnCount = isMobile ? 2 : 3;
-  const gapPx = isMobile ? 8 : 12; // matches gap-2 / sm:gap-3
+  const gapPx = columnCount === 2 ? 8 : 12; // matches gap-2 / sm:gap-3
 
   const { ref: gridRef, units, minRatio } = useFrameMetrics(columnCount, gapPx);
 
@@ -242,6 +289,8 @@ export function CreativeSection() {
     (piece) => piece.displayRatio,
   );
   const frameUnits = units / OVERFLOW;
+  // A tile is one column wide, and the grid stops growing at max-w-7xl (1280px).
+  const sizes = `(min-width: 1344px) ${Math.round(1280 / columnCount)}px, ${Math.round(100 / columnCount)}vw`;
 
   return (
     // No `overflow-hidden` here: a clipping ancestor turns the sticky frame below into a
@@ -267,8 +316,8 @@ export function CreativeSection() {
         </ContainerAnimated>
         <ContainerAnimated>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
-            מעבר לקוד יש את החלק שרואים קודם: באנרים, סרטונים, קריאייטיב לקמפיינים
-            ונכסים ויזואליים שליוו את הפרויקטים. זה מבחר מהם.
+            מעבר לקוד יש את החלק שרואים קודם: קריאייטיב לרשתות, באנרים לקמפיינים,
+            סרטונים ונכסים ויזואליים שליוו את המותגים שעבדתי איתם. זה מבחר מהם.
           </p>
         </ContainerAnimated>
       </ContainerStagger>
@@ -279,7 +328,7 @@ export function CreativeSection() {
             ref={gridRef}
             className={cn(
               "mx-auto max-w-7xl items-start gap-2 sm:gap-3",
-              columnCount === 2 ? "grid-cols-2" : "grid-cols-3",
+              GRID_COLS[columnCount],
             )}
           >
             {columns.map((column, columnIndex) => (
@@ -295,6 +344,7 @@ export function CreativeSection() {
                     piece={piece}
                     index={columnIndex * 5 + i}
                     reduce={reduce}
+                    sizes={sizes}
                   />
                 ))}
               </GalleryCol>
