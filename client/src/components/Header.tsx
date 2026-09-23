@@ -1,6 +1,8 @@
 import { useState, type CSSProperties } from "react";
 import { useLocation } from "react-router-dom";
 import { site } from "@/data/site";
+import { useActiveSection } from "@/hooks/useActiveSection";
+import { NavTabs, NAV_TAB_CLASS } from "./NavTabs";
 // Header links navigate through the page sweep, same as the project cards.
 import { TransitionLink as Link } from "@/lib/viewTransition";
 
@@ -31,13 +33,17 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const menuState = mobileMenuOpen ? "open" : "closed";
+  const onHome = location.pathname === "/";
 
-  const isActive = (hash: string) =>
-    hash ? location.hash === hash : location.pathname === "/" && !location.hash;
+  // The underline follows what is on screen, not the last link clicked: with a marker this
+  // visible, leaving it on "about" while the visitor reads the projects would read as broken.
+  const activeSection = useActiveSection(onHome ? site.navLinks.map((link) => link.section) : []);
 
-  const linkClass = (hash: string) =>
-    `text-sm font-medium hover:text-gray-300 transition-colors duration-150 ${
-      isActive(hash) ? "text-gray-300" : "text-white"
+  const isActive = (section: string) => onHome && section === activeSection;
+
+  const linkClass = (section: string) =>
+    `text-sm font-medium transition-colors duration-150 ${
+      isActive(section) ? "text-white" : "text-white/60 can-hover:hover:text-white"
     }`;
 
   return (
@@ -99,13 +105,24 @@ const Header = () => {
 
           {/* Desktop navigation */}
           <div className="hidden md:flex items-center justify-end gap-4 sm:gap-6">
-            <nav className="flex items-center gap-4 sm:gap-6">
-              {site.navLinks.map((link) => (
-                <Link key={link.to} to={link.to} className={linkClass(link.hash)}>
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            <NavTabs
+              label="ניווט ראשי"
+              activeId={onHome ? activeSection : undefined}
+              tabs={site.navLinks.map((link) => ({
+                id: link.section,
+                render: () => (
+                  <Link
+                    to={link.to}
+                    className={`${NAV_TAB_CLASS} ${
+                      isActive(link.section) ? "text-white" : "text-white/60"
+                    } transition-colors duration-150`}
+                    aria-current={isActive(link.section) ? "page" : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                ),
+              }))}
+            />
 
             {socialLinks.length > 0 && (
               <div className="flex gap-2">
@@ -154,7 +171,7 @@ const Header = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`mobile-menu-link ${linkClass(link.hash)} py-2 text-right`}
+                className={`mobile-menu-link ${linkClass(link.section)} py-2 text-right`}
                 // Stagger only on open (0/40/80/120ms); close together.
                 style={{ transitionDelay: mobileMenuOpen ? `${i * LINK_STAGGER_MS}ms` : "0ms" }}
                 tabIndex={mobileMenuOpen ? 0 : -1}

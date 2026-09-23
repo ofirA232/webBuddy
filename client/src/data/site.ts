@@ -15,10 +15,11 @@ export const site = {
     linkedin: "", // TODO(user): real LinkedIn profile URL
     twitter: "", // TODO(user): leave empty to hide
   },
+  /** `section` is the id the link points at, which is also what the header underlines. */
   navLinks: [
-    { to: "/", label: "אודות", hash: "" },
-    { to: "/#skills", label: "כישורים", hash: "#skills" },
-    { to: "/#projects", label: "פרויקטים", hash: "#projects" },
-    { to: "/#contact", label: "יצירת קשר", hash: "#contact" },
+    { to: "/", label: "אודות", hash: "", section: "about" },
+    { to: "/#skills", label: "כישורים", hash: "#skills", section: "skills" },
+    { to: "/#projects", label: "פרויקטים", hash: "#projects", section: "projects" },
+    { to: "/#contact", label: "יצירת קשר", hash: "#contact", section: "contact" },
   ],
 } as const;
