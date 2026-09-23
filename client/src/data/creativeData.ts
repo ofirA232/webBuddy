@@ -140,34 +140,27 @@ export const creativeWall = creativePieces.length > 0 ? creativePieces : PLACEHO
 export const hasCreativeWork = creativePieces.length > 0;
 
 /**
- * Fills `count` columns to roughly `targetUnits` tall, where one unit is the column's
- * own width — so the packing is the same whatever the screen size.
+ * Lays every piece into `count` columns, each going to whichever column is currently
+ * shortest — which is what keeps the columns level when the pieces are all different
+ * shapes. Nothing is left out: the wall shows the whole set, and the section it sits
+ * in grows to give the drift room to reveal it.
  *
- * Each piece goes to whichever column is currently shortest, which is what keeps the
- * columns level when the pieces are all different shapes. Filename order is kept
- * within a column, which is as much of it as a masonry layout can honour.
+ * Heights come back in column widths, so the caller can size that section without
+ * having to measure the laid-out DOM a second time.
  */
 export function packColumns<T>(
   pieces: T[],
   count: number,
-  targetUnits: number,
-  /** The shape each piece is actually laid out at, which may be capped to fit the frame. */
+  /** The shape each piece is laid out at, which may be capped to fit the frame. */
   ratioOf: (piece: T) => number,
 ): { columns: T[][]; heights: number[] } {
   const columns: T[][] = Array.from({ length: count }, () => []);
   const heights = new Array(count).fill(0);
-  // Some slack past the target, or a tall piece could never be placed at all.
-  const limit = targetUnits * 1.2;
 
   for (const piece of pieces) {
-    if (heights.every((h) => h >= targetUnits)) break; // the wall is full
-    const height = 1 / ratioOf(piece); // tile height, as a share of column width
     const shortest = heights.indexOf(Math.min(...heights));
-    // A piece that would push its column well past the others is left out rather than
-    // making one column tower over the rest.
-    if (heights[shortest] + height > limit) continue;
     columns[shortest].push(piece);
-    heights[shortest] += height;
+    heights[shortest] += 1 / ratioOf(piece); // tile height, as a share of column width
   }
 
   return { columns, heights };

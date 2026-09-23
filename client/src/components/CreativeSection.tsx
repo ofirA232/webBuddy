@@ -16,14 +16,20 @@ import { creativeWall, isHosted, packColumns, type CreativePiece } from "@/data/
 import { cn } from "@/lib/utils";
 
 /**
- * How tall the columns are packed, as a multiple of the frame. The columns have to
- * overflow or the drift uncovers empty space at one edge; past that, this is what
- * decides how much work the wall holds, since the drift reveals the rest as it goes.
+ * How fast the wall moves against the page. Below 1 it reads as parallax: the drift
+ * lags the scroll rather than racing it. This is what turns the amount of work the
+ * wall holds into the length of the section it needs.
  */
-const OVERFLOW = 2.2;
+const DRIFT_SPEED = 0.75;
 
-/** Fallback packing target before the frame has been measured, in column widths. */
-const FALLBACK_UNITS = 5.4;
+/** The section is never shorter than this, or the reveal has no room to play out. */
+const MIN_SECTION_FRAMES = 3.2;
+
+/** Room either side of the drift, in frames, for the wall to stand up and settle. */
+const SECTION_LEAD_FRAMES = 1.6;
+
+/** Fallback frame shape before it has been measured, in column widths. */
+const FALLBACK_FRAME_UNITS = 2.5;
 
 /**
  * The tallest a tile may be, as a share of the frame. A piece taller than the frame
@@ -102,14 +108,17 @@ function useColumnCount() {
 }
 
 /**
- * How tall a column should be packed, expressed in multiples of its own width, so the
- * same number works at any screen size. Measured from the rendered frame rather than
- * assumed, because the frame is a viewport height minus whatever padding is in force.
+ * The frame's shape in column widths, which is the unit everything else is expressed
+ * in, plus the frame's own height in pixels for sizing the section. Measured from the
+ * rendered frame rather than assumed, because it is a viewport height minus whatever
+ * padding is in force.
  */
 function useFrameMetrics(columnCount: number, gapPx: number) {
   const ref = useRef<HTMLDivElement>(null);
   const [metrics, setMetrics] = useState({
-    units: FALLBACK_UNITS,
+    frameUnits: FALLBACK_FRAME_UNITS,
+    frameHeight: 0,
+    columnWidth: 0,
     minRatio: FALLBACK_MIN_RATIO,
   });
 
@@ -124,7 +133,9 @@ function useFrameMetrics(columnCount: number, gapPx: number) {
       const columnWidth = (offsetWidth - gapPx * (columnCount - 1)) / columnCount;
       if (columnWidth > 0 && offsetHeight > 0) {
         setMetrics({
-          units: (offsetHeight * OVERFLOW) / columnWidth,
+          frameUnits: offsetHeight / columnWidth,
+          frameHeight: offsetHeight,
+          columnWidth,
           minRatio: columnWidth / (offsetHeight * TALLEST_TILE),
         });
       }
@@ -137,6 +148,19 @@ function useFrameMetrics(columnCount: number, gapPx: number) {
   }, [columnCount, gapPx]);
 
   return { ref, ...metrics };
+}
+
+/**
+ * How long the section has to be for the drift to reveal a wall of this height at a
+ * speed that still reads as parallax. Everything is shown, so the scroll is what
+ * gives way: more work means a longer section rather than pieces left out.
+ */
+function sectionHeight(tallestColumnUnits: number, frameUnits: number, frameHeight: number) {
+  if (frameHeight === 0) return null;
+  const travel = Math.max(tallestColumnUnits - frameUnits, 0) * (frameHeight / frameUnits);
+  const driftSpan = DRIFT_RANGE[1] - DRIFT_RANGE[0];
+  const needed = SECTION_LEAD_FRAMES * frameHeight + travel / DRIFT_SPEED / driftSpan;
+  return Math.round(Math.max(MIN_SECTION_FRAMES * frameHeight, needed));
 }
 
 /**
@@ -294,7 +318,7 @@ export function CreativeSection() {
   const reduce = useReducedMotion() ?? false;
   const gapPx = columnCount === 2 ? 8 : 12; // matches gap-2 / sm:gap-3
 
-  const { ref: gridRef, units, minRatio } = useFrameMetrics(columnCount, gapPx);
+  const { ref: gridRef, frameUnits, frameHeight, minRatio } = useFrameMetrics(columnCount, gapPx);
 
   const wall: WallPiece[] = creativeWall.map((piece) => {
     // Flat there is no frame, so nothing needs capping and nothing needs fitting.
@@ -306,14 +330,8 @@ export function CreativeSection() {
     };
   });
 
-  // Flat, there is no frame to fill, so everything is shown rather than packed to fit.
-  const { columns, heights } = packColumns(
-    wall,
-    columnCount,
-    reduce ? Infinity : units,
-    (piece) => piece.displayRatio,
-  );
-  const frameUnits = units / OVERFLOW;
+  const { columns, heights } = packColumns(wall, columnCount, (piece) => piece.displayRatio);
+  const runway = reduce ? null : sectionHeight(Math.max(...heights), frameUnits, frameHeight);
   // A tile is one column wide, and the grid stops growing at max-w-7xl (1280px).
   const sizes = `(min-width: 1344px) ${Math.round(1280 / columnCount)}px, ${Math.round(100 / columnCount)}vw`;
 
@@ -347,7 +365,11 @@ export function CreativeSection() {
         </ContainerAnimated>
       </ContainerStagger>
 
-      <ContainerScroll className={reduce ? "relative" : "h-[420vh]"}>
+      <ContainerScroll
+        className="relative"
+        // Flat, the wall is a plain grid and needs no runway at all.
+        style={runway ? { height: runway, minHeight: runway } : undefined}
+      >
         <ContainerSticky className={cn("px-4 pb-16 pt-10 sm:px-6 md:pb-24 lg:px-8", reduce ? "" : "h-svh")}>
           <GalleryContainer
             ref={gridRef}
