@@ -58,5 +58,117 @@
     "type": "image",
     "width": 900,
     "height": 900
+  },
+  "allPOS-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1066376748665651",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "LION_CRY-שורט-קמפיין": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/906564119038183",
+    "width": 506,
+    "height": 900,
+    "poster": true
+  },
+  "MOSES-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/926121526953913",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "N6-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1370475833966404",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "N62_1-שורט-קמפיין": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/730108352824620",
+    "width": 506,
+    "height": 900,
+    "poster": true
+  },
+  "N62-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1321596799165360",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "N86_1-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/2111248369387641",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "N86_SUMMER-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1143638477815228",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "N86-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/963241868745192",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "OPEN_BANKING-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1207002030608601",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "PURIM_POS-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/908721218749276",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "UN20_ENV_2-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/2032706897658214",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "UN20_ENV-שורט-קמפיין": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1434510341373527",
+    "width": 506,
+    "height": 900,
+    "poster": true
+  },
+  "UN20_TUFF-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/1750131499562812",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "UN20-פוסט-מרובע": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/717967860865999",
+    "width": 900,
+    "height": 900,
+    "poster": true
+  },
+  "YOM_AHATZMAOT-שורט-קמפיין": {
+    "type": "facebook",
+    "videoUrl": "https://www.facebook.com/reel/977027014910848",
+    "width": 506,
+    "height": 900,
+    "poster": true
   }
 }

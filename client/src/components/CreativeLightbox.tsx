@@ -2,12 +2,12 @@ import { useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
-import { youtubeEmbedUrl, type CreativePiece } from "@/data/creativeData";
+import { embedUrl, type CreativePiece } from "@/data/creativeData";
 
 /**
- * The player for a piece that lives on YouTube.
+ * The player for a piece that lives on YouTube or Facebook.
  *
- * The wall shows a poster and nothing else: a YouTube embed pulls in around a megabyte
+ * The wall shows a poster and nothing else: either platform pulls in around a megabyte
  * of player before it shows a single frame, and a wall of a dozen of them would cost
  * more than the whole rest of the page. The iframe is only created once someone asks
  * for it, and is destroyed again on close, which also stops playback.
@@ -20,7 +20,8 @@ export function CreativeLightbox({
   onClose: () => void;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  const open = piece !== null && Boolean(piece.youtubeId);
+  const src = piece ? embedUrl(piece) : null;
+  const open = src !== null;
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
@@ -43,7 +44,7 @@ export function CreativeLightbox({
         >
           <Dialog.Title className="sr-only">{piece?.alt ?? "סרטון"}</Dialog.Title>
 
-          {piece?.youtubeId && (
+          {piece && src && (
             <div
               // Fits the viewport whichever way round the video is: a vertical short is
               // bounded by the height, a 16:9 by the width.
@@ -51,10 +52,10 @@ export function CreativeLightbox({
               style={{ aspectRatio: piece.ratio, width: `min(100%, calc((100vh - 8rem) * ${piece.ratio}))` }}
             >
               <iframe
-                // Keyed by id so switching pieces mounts a fresh player rather than
-                // leaving the previous video loaded behind the new one.
-                key={piece.youtubeId}
-                src={youtubeEmbedUrl(piece.youtubeId)}
+                // Keyed by the URL so switching pieces mounts a fresh player rather
+                // than leaving the previous video loaded behind the new one.
+                key={src}
+                src={src}
                 title={piece.alt}
                 className="block size-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

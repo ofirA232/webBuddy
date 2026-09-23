@@ -12,17 +12,18 @@ import {
 } from "@/components/ui/animated-gallery";
 import { CreativeLightbox } from "@/components/CreativeLightbox";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
-import { creativeWall, packColumns, type CreativePiece } from "@/data/creativeData";
+import { creativeWall, isHosted, packColumns, type CreativePiece } from "@/data/creativeData";
 import { cn } from "@/lib/utils";
 
 /**
- * How far the wall runs past the top and bottom of its frame. The columns have to
- * overflow, or the drift uncovers empty space at one edge or the other.
+ * How tall the columns are packed, as a multiple of the frame. The columns have to
+ * overflow or the drift uncovers empty space at one edge; past that, this is what
+ * decides how much work the wall holds, since the drift reveals the rest as it goes.
  */
-const OVERFLOW = 1.35;
+const OVERFLOW = 2.2;
 
 /** Fallback packing target before the frame has been measured, in column widths. */
-const FALLBACK_UNITS = 2.2;
+const FALLBACK_UNITS = 5.4;
 
 /**
  * The tallest a tile may be, as a share of the frame. A piece taller than the frame
@@ -68,7 +69,7 @@ function driftFor(columnUnits: number, frameUnits: number, index: number): strin
  * The drift finishes before the section does, so the wall holds still at the end with
  * its last pieces in frame instead of sliding past them as it unsticks.
  */
-const DRIFT_RANGE: [number, number] = [0.45, 0.85];
+const DRIFT_RANGE: [number, number] = [0.3, 0.88];
 
 /**
  * Narrower columns fit more work on the one screen the wall gets, and keep a square
@@ -258,7 +259,7 @@ function Piece({
       className="w-full flex-none overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] shadow-lg shadow-black/40"
       style={{ aspectRatio: piece.displayRatio }}
     >
-      {piece.kind === "youtube" ? (
+      {isHosted(piece) ? (
         <PosterButton piece={piece} fitClass={fitClass} sizes={sizes} onPlay={() => onOpen(piece)} />
       ) : piece.kind === "video" && piece.video ? (
         <VideoTile piece={piece} reduce={reduce} fitClass={fitClass} sizes={sizes} />
@@ -343,7 +344,7 @@ export function CreativeSection() {
         </ContainerAnimated>
       </ContainerStagger>
 
-      <ContainerScroll className={reduce ? "relative" : "h-[300vh]"}>
+      <ContainerScroll className={reduce ? "relative" : "h-[420vh]"}>
         <ContainerSticky className={cn("px-4 pb-16 pt-10 sm:px-6 md:pb-24 lg:px-8", reduce ? "" : "h-svh")}>
           <GalleryContainer
             ref={gridRef}

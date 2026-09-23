@@ -15,7 +15,7 @@ import manifest from "@/assets/creative/manifest.json";
 
 export type CreativePiece = {
   id: string;
-  kind: "image" | "video" | "youtube";
+  kind: "image" | "video" | "youtube" | "facebook";
   /** Description for screen readers. The wall itself is captionless, like the design. */
   alt: string;
   /** Still, or the poster frame of a video. */
@@ -25,6 +25,8 @@ export type CreativePiece = {
   video?: string;
   /** The YouTube video id, for `kind: "youtube"`. */
   youtubeId?: string;
+  /** The original post URL, for `kind: "facebook"`. */
+  videoUrl?: string;
   /** width / height, from the manifest, so a tile is the shape of its own piece. */
   ratio: number;
 };
@@ -39,13 +41,16 @@ const OVERRIDES: Record<string, { alt?: string }> = {};
 const DEFAULT_RATIO = 4 / 5;
 
 type ManifestEntry = {
-  type?: "image" | "video" | "youtube";
+  type?: "image" | "video" | "youtube" | "facebook";
   width: number;
   height: number;
-  /** For `youtube`: the id, and whether a poster was written locally. */
+  /** For a hosted video: how to address it, and whether a poster was written locally. */
   videoId?: string;
+  videoUrl?: string;
   poster?: boolean;
 };
+
+const HOSTED = ["youtube", "facebook"] as const;
 
 const assets = import.meta.glob("../assets/creative/*.{webp,mp4}", {
   eager: true,
@@ -69,7 +74,9 @@ function build(): CreativePiece[] {
 
   const pieces: CreativePiece[] = entries.map(([name, entry]) => {
     const kind: CreativePiece["kind"] =
-      entry.type === "video" || entry.type === "youtube" ? entry.type : "image";
+      entry.type === "video" || entry.type === "youtube" || entry.type === "facebook"
+        ? entry.type
+        : "image";
     // Anything with a moving picture is represented by a poster frame; a still is itself.
     const stem = kind === "image" ? name : `${name}.poster`;
     return {
@@ -84,6 +91,7 @@ function build(): CreativePiece[] {
       small: byName[`${stem}@480.webp`],
       video: kind === "video" ? byName[`${name}.mp4`] : undefined,
       youtubeId: kind === "youtube" ? entry.videoId : undefined,
+      videoUrl: kind === "facebook" ? entry.videoUrl : undefined,
       ratio: entry.height ? entry.width / entry.height : DEFAULT_RATIO,
     };
   });
@@ -94,9 +102,21 @@ function build(): CreativePiece[] {
 
 const youtubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
 
-export function youtubeEmbedUrl(id: string) {
-  // nocookie, and no related videos from other channels at the end.
-  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+/** True for anything the lightbox can play, which is everything not hosted here. */
+export const isHosted = (piece: CreativePiece) =>
+  (HOSTED as readonly string[]).includes(piece.kind);
+
+/** The player URL for a piece, or null if it is not a hosted video. */
+export function embedUrl(piece: CreativePiece): string | null {
+  if (piece.kind === "youtube" && piece.youtubeId) {
+    // nocookie, and no related videos from other channels at the end.
+    return `https://www.youtube-nocookie.com/embed/${piece.youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+  }
+  if (piece.kind === "facebook" && piece.videoUrl) {
+    const href = encodeURIComponent(piece.videoUrl);
+    return `https://www.facebook.com/plugins/video.php?href=${href}&show_text=false&autoplay=true`;
+  }
+  return null;
 }
 
 /**

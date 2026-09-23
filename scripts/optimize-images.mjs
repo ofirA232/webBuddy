@@ -27,11 +27,15 @@ import path from "node:path";
 
 const run = promisify(execFile);
 
+/** Facebook serves its embed page differently to a client that does not look like one. */
+const BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+
 const root = path.resolve(import.meta.dirname, "..");
 const SOURCE_EXT = /\.(png|jpe?g|webp|avif)$/i;
 const VIDEO_EXT = /\.(mp4|mov|m4v|webm|avi)$/i;
-/** Listing file for work that lives on YouTube rather than in the folder. */
-const YOUTUBE_LIST = "youtube.txt";
+/** Listing files for work that lives on a video platform rather than in the folder. */
+const VIDEO_LISTS = ["videos.txt", "youtube.txt"];
 
 const sets = [
   { src: "assets-src/projects", out: "client/src/assets/projects", widths: [1280, 640] },
@@ -97,9 +101,9 @@ async function processSet({ src, out, widths, manifest, video }) {
   // `<name>.poster.jpg` is the still for a video, not a piece of its own.
   const images = (await listFiles(srcDir, SOURCE_EXT)).filter((f) => !/\.poster\./i.test(f));
   const videos = video ? await listFiles(srcDir, VIDEO_EXT) : [];
-  const youtube = video ? await readYoutubeList(srcDir) : [];
+  const hosted = video ? await readVideoList(srcDir) : [];
 
-  if (images.length === 0 && videos.length === 0 && youtube.length === 0) {
+  if (images.length === 0 && videos.length === 0 && hosted.length === 0) {
     console.log(`  (nothing in ${src})`);
     // An empty manifest still has to exist, or the module that imports it fails to build.
     if (manifest) await writeManifest(outDir, out, {});
@@ -188,36 +192,47 @@ async function processSet({ src, out, widths, manifest, video }) {
     console.log(`  ${src}/${file} -> ${out}/${name}.poster.webp (+@${posterSmall})`);
   }
 
-  for (const entry of youtube) {
+  for (const entry of hosted) {
     const [posterWidth, posterSmall] = widths;
-    const poster = await youtubeposter(entry, srcDir, outDir, posterWidth, posterSmall);
+    const poster = await hostedPoster(entry, srcDir, outDir, posterWidth, posterSmall);
     pieces[entry.name] = {
-      type: "youtube",
-      videoId: entry.id,
-      // The declared shape, not the thumbnail's: a Short's thumbnail is often a 16:9
-      // frame with the vertical video sitting inside it. The long side is the one
-      // pinned to 900, so the numbers describe the shape whichever way round it is.
+      type: entry.kind,
+      ...(entry.kind === "youtube" ? { videoId: entry.id } : { videoUrl: entry.url }),
+      // The declared shape, not the thumbnail's: a vertical video's thumbnail is often
+      // a 16:9 frame with the video sitting inside it. The long side is the one pinned
+      // to 900, so the numbers describe the shape whichever way round it is.
       width: Math.round(entry.ratio >= 1 ? 900 : 900 * entry.ratio),
       height: Math.round(entry.ratio >= 1 ? 900 / entry.ratio : 900),
       poster,
     };
-    console.log(`  youtube ${entry.id} -> ${out}/${entry.name}.poster.webp ${poster ? "" : "(no poster; the page falls back to YouTube's own thumbnail)"}`);
+    const note = poster
+      ? ""
+      : entry.kind === "youtube"
+        ? "(no poster; the page falls back to YouTube's own thumbnail)"
+        : `(NO POSTER - add a file named ${entry.name}.poster.jpg beside the listing)`;
+    console.log(`  ${entry.kind} ${entry.name} -> ${out}/${entry.name}.poster.webp ${note}`);
   }
 
   if (manifest) await writeManifest(outDir, out, pieces);
 }
 
 /**
- * `01-name = https://youtu.be/ID` per line, `#` for comments, and an optional
- * `| 4:5` to declare a shape the URL does not imply.
+ * `01-name = https://...` per line, `#` for comments, and an optional `| 4:5` to
+ * declare a shape the link does not imply. YouTube and Facebook links both work.
  */
-async function readYoutubeList(srcDir) {
-  let text;
-  try {
-    text = await readFile(path.join(srcDir, YOUTUBE_LIST), "utf8");
-  } catch {
-    return [];
+async function readVideoList(srcDir) {
+  let text = null;
+  let listName = null;
+  for (const candidate of VIDEO_LISTS) {
+    try {
+      text = await readFile(path.join(srcDir, candidate), "utf8");
+      listName = candidate;
+      break;
+    } catch {
+      // try the next name
+    }
   }
+  if (text === null) return [];
 
   const entries = [];
   for (const raw of text.split(/\r?\n/)) {
@@ -226,38 +241,83 @@ async function readYoutubeList(srcDir) {
 
     const [left, ...rest] = line.split("=");
     if (rest.length === 0) {
-      console.log(`  ${YOUTUBE_LIST}: skipped, no "=" -> ${line.slice(0, 60)}`);
+      console.log(`  ${listName}: skipped, no "=" -> ${line.slice(0, 60)}`);
       continue;
     }
     const [urlPart, shapePart] = rest.join("=").split("|");
     const url = urlPart.trim();
     const id = youtubeId(url);
-    if (!id) {
-      console.log(`  ${YOUTUBE_LIST}: skipped, no video id -> ${url.slice(0, 60)}`);
+    const facebook = !id && FACEBOOK_HOST.test(url);
+    if (!id && !facebook) {
+      console.log(`  ${listName}: skipped, not a YouTube or Facebook link -> ${url.slice(0, 60)}`);
       continue;
     }
 
-    let ratio = /\/shorts\//.test(url) ? 9 / 16 : 16 / 9;
+    // Vertical unless the link or the tag says otherwise: a Short and a Reel are
+    // both vertical formats, and everything else defaults to widescreen.
+    let ratio = VERTICAL_PATH.test(url) ? 9 / 16 : 16 / 9;
     if (shapePart) {
       const [w, h] = shapePart.trim().split(/[:/]/).map(Number);
       if (w > 0 && h > 0) ratio = w / h;
     }
-    entries.push({ name: left.trim(), id, ratio });
+    entries.push(
+      id
+        ? { name: left.trim(), kind: "youtube", id, ratio }
+        : { name: left.trim(), kind: "facebook", url, ratio },
+    );
   }
   return entries.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+const FACEBOOK_HOST = /facebook\.com|fb\.watch/i;
+const VERTICAL_PATH = /\/shorts\/|\/reels?\//i;
+const YOUTUBE_HOST = /youtube\.com|youtu\.be/i;
+
 function youtubeId(url) {
+  if (!YOUTUBE_HOST.test(url)) return null;
   const match = url.match(/(?:v=|\/shorts\/|\/embed\/|youtu\.be\/|\/live\/)([A-Za-z0-9_-]{6,})/);
   return match ? match[1] : null;
 }
 
+export function facebookEmbed(url) {
+  return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
+}
+
+/**
+ * Facebook publishes no thumbnail URL the way YouTube does, but its embed page carries
+ * one. That image is signed and expires, so it is downloaded here rather than linked to.
+ */
+async function facebookThumbnail(url) {
+  const response = await fetch(facebookEmbed(url), {
+    headers: { "user-agent": BROWSER_UA },
+    signal: AbortSignal.timeout(25000),
+  });
+  if (!response.ok) return null;
+
+  const html = await response.text();
+  // t15.5256-10 is Facebook's path for a video's own still; the other scontent images
+  // on the page are the posting page's avatar and chrome.
+  const marker = html.indexOf("t15.5256-10");
+  if (marker === -1) return null;
+  const start = html.lastIndexOf("https", marker);
+  if (start === -1) return null;
+  let end = start;
+  while (end < html.length && !'"\'\\ '.includes(html[end])) end += 1;
+  const image = html.slice(start, end).replace(/&amp;/g, "&");
+
+  const file = await fetch(image, {
+    headers: { "user-agent": BROWSER_UA },
+    signal: AbortSignal.timeout(25000),
+  });
+  return file.ok ? Buffer.from(await file.arrayBuffer()) : null;
+}
+
 /**
  * The poster comes from a file beside the listing if there is one, and otherwise from
- * YouTube. Fetching is best effort: on a machine that cannot reach YouTube the entry
- * is still written, and the page falls back to YouTube's thumbnail at runtime.
+ * the platform. Fetching is best effort: if it fails the entry is still written, and a
+ * YouTube piece falls back to YouTube's own thumbnail at runtime.
  */
-async function youtubeposter(entry, srcDir, outDir, width, small) {
+async function hostedPoster(entry, srcDir, outDir, width, small) {
   let input = null;
 
   for (const ext of ["jpg", "jpeg", "png", "webp"]) {
@@ -271,7 +331,7 @@ async function youtubeposter(entry, srcDir, outDir, width, small) {
     }
   }
 
-  if (!input) {
+  if (!input && entry.kind === "youtube") {
     for (const quality of ["maxresdefault", "sddefault", "hqdefault"]) {
       try {
         const response = await fetch(`https://i.ytimg.com/vi/${entry.id}/${quality}.jpg`, {
@@ -283,6 +343,14 @@ async function youtubeposter(entry, srcDir, outDir, width, small) {
       } catch {
         // offline, blocked, or no such thumbnail: try the next size, then give up
       }
+    }
+  }
+
+  if (!input && entry.kind === "facebook") {
+    try {
+      input = await facebookThumbnail(entry.url);
+    } catch {
+      // offline, or the post is not public: the caller reports the missing poster
     }
   }
 
