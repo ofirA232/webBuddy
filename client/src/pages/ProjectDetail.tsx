@@ -42,7 +42,8 @@ const ProjectDetail = () => {
         {/* Content column */}
         <Reveal stagger={0.06} className="order-2 lg:order-1">
           <Reveal.Item>
-            <h1 className="text-white text-3xl md:text-4xl font-bold mb-6 text-right">{project.title}</h1>
+            <p className="section-eyebrow text-right">פרויקט</p>
+            <h1 className="text-white text-3xl md:text-4xl font-bold mb-6 mt-3 text-right">{project.title}</h1>
           </Reveal.Item>
 
           {project.fullDescription && (
@@ -103,7 +104,10 @@ const ProjectDetail = () => {
                 <h2 className="text-white text-2xl font-bold mb-4">טכנולוגיות</h2>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech) => (
-                    <span key={tech} className="bg-[#111111] px-3 py-1 rounded-lg text-white">
+                    <span
+                      key={tech}
+                      className="rounded-full border border-[rgb(var(--accent)/0.3)] bg-[rgb(var(--accent)/0.12)] px-3 py-1 text-sm text-[rgb(var(--accent-soft))]"
+                    >
                       {tech}
                     </span>
                   ))}
@@ -138,7 +142,7 @@ const ProjectDetail = () => {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="pressable flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black can-hover:hover:bg-gray-100"
+                    className="pressable flex w-full items-center justify-center gap-2 rounded-full bg-[rgb(var(--accent))] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgb(var(--accent)/0.75)] can-hover:hover:brightness-110"
                   >
                     <Globe size={18} aria-hidden="true" />
                     <span>צפה באתר</span>
@@ -150,7 +154,7 @@ const ProjectDetail = () => {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="pressable flex w-full items-center justify-center gap-2 rounded-lg bg-[#333333] px-4 py-2.5 text-sm font-medium text-white can-hover:hover:bg-[#444444]"
+                    className="pressable flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-3 text-sm font-medium text-white can-hover:hover:bg-white/[0.08]"
                   >
                     <Github size={18} aria-hidden="true" />
                     <span>צפה בקוד</span>

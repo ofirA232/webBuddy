@@ -33,6 +33,25 @@
   font-size: 13px;
 }
 
+/* The primary action: red fill, sweeping to near-black on hover. Used for the form's
+ * submit and anywhere the accent should lead. */
+.cta-button--accent {
+  border-color: rgb(var(--accent));
+  background: rgb(var(--accent));
+  color: #fff;
+  box-shadow: 0 10px 30px -10px rgb(var(--accent) / 0.75);
+}
+
+.cta-button--accent .cta-button__overlay {
+  background: #120505;
+  color: #fff;
+}
+
+.cta-button--block {
+  width: 100%;
+  min-width: 0;
+}
+
 @media (min-width: 640px) {
   .cta-button {
     min-width: 140px;
@@ -83,6 +102,8 @@
   cursor: wait;
 }
 
+/* Focus stays white in both variants: on black it is far more visible than the red,
+ * and focus visibility is an accessibility requirement rather than a styling choice. */
 .cta-button:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;

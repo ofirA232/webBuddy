@@ -91,7 +91,8 @@ export function Portfolio() {
     <section id="projects" dir="rtl">
       <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <h2 className="text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
+          <p className="section-eyebrow">פרויקטים</p>
+          <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
             הפרויקטים שלי
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
@@ -114,7 +115,7 @@ export function Portfolio() {
                   className={cn(
                     "pressable rounded-full px-5 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
                     isSelected
-                      ? "bg-white font-medium text-black"
+                      ? "bg-[rgb(var(--accent))] font-medium text-white"
                       : "text-white/45 can-hover:hover:text-white",
                   )}
                 >

@@ -15,6 +15,36 @@
     --accent-soft: 255 92 92; /* text and small marks, light enough to read on black */
     --accent-deep: 122 15 15; /* the dark end of a gradient */
     --accent-warm: 255 120 60; /* the ember that keeps the aurora from going flat */
+
+    /* Warnings cannot be red here: red means "us". Amber keeps failure legible as failure. */
+    --warn: 245 158 11;
+  }
+
+  ::selection {
+    background-color: rgb(var(--accent));
+    color: #fff;
+  }
+
+  /* Firefox */
+  html {
+    scrollbar-color: rgb(var(--accent) / 0.75) #0a0a0a;
+  }
+
+  /* WebKit */
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid #0a0a0a;
+    border-radius: 9999px;
+    background-color: rgb(var(--accent) / 0.75);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--accent));
   }
 
   * {
@@ -39,6 +69,15 @@
   section[id],
   [id^="service-"] {
     scroll-margin-top: 5rem;
+  }
+}
+
+@layer components {
+  /* The small red label above a section heading. Repeated down the page it becomes the
+   * signal that a new chapter starts, which is most of what the accent is doing here. */
+  .section-eyebrow {
+    @apply text-[13px] font-semibold tracking-[0.12em];
+    color: rgb(var(--accent-soft));
   }
 }
 
@@ -141,6 +180,12 @@
   background: radial-gradient(closest-side, rgb(var(--accent-deep) / 0.75), transparent);
 }
 
+/* Opening title (IntroScreen.tsx): a wash behind the name, so the first seconds carry
+ * the brand colour rather than being plain white on black. */
+.intro-glow {
+  background: radial-gradient(closest-side, rgb(var(--accent) / 0.3), transparent);
+}
+
 /* Stand-ins for artwork that has not been supplied yet. */
 .media-placeholder {
   background-image: radial-gradient(ellipse at top right, rgb(var(--accent) / 0.5), transparent 60%);
@@ -162,14 +207,45 @@
  * variable font, so the weight interpolates instead of snapping between cut sizes.
  */
 .service-nav-link {
+  position: relative;
+  /* A gutter on the reading side, so the marker has somewhere to sit without shifting text. */
+  padding-inline-start: 20px;
   font-weight: 300;
   opacity: 0.45;
   transition: font-weight 500ms var(--ease-out), opacity 500ms var(--ease-out);
 }
 
+/* The marker: what makes the current category readable at a glance rather than by weight alone. */
+.service-nav-link::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 9999px;
+  background-color: rgb(var(--accent-soft));
+  opacity: 0;
+  transform: scale(0.35);
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+}
+
 .service-nav-link.is-active {
   font-weight: 550;
   opacity: 1;
+}
+
+.service-nav-link.is-active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-nav-link::before {
+    transform: none;
+    transition-duration: 200ms;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -256,7 +332,7 @@
     radial-gradient(1px 1px at 4% 86%, #fff 50%, transparent 51%);
 }
 
-.contact-eyebrow {
+.accent-text {
   color: rgb(var(--accent-soft));
 }
 
@@ -269,33 +345,6 @@
 
 .contact-switch[data-state="checked"] {
   background-color: rgb(var(--accent));
-}
-
-.contact-submit {
-  background-color: rgb(var(--accent));
-  box-shadow: 0 10px 30px -10px rgb(var(--accent) / 0.75);
-  transition: transform 160ms var(--ease-out), filter 160ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .contact-submit:hover:not(:disabled) {
-    filter: brightness(1.12);
-  }
-}
-
-.contact-submit:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.contact-submit:focus-visible {
-  outline: 2px solid rgb(var(--accent-soft));
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .contact-submit:active:not(:disabled) {
-    transform: none;
-  }
 }
 
 /* ---------- Mobile menu (Header.tsx) ---------- */

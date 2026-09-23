@@ -160,6 +160,14 @@ export function IntroScreen() {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
           exit={{ opacity: 0, transition: { duration: 0.35, ease: EASE_OUT } }}
         >
+          <motion.div
+            aria-hidden="true"
+            className="intro-glow pointer-events-none absolute left-1/2 top-1/2 h-[55vh] w-[92vw] max-w-[1100px] -translate-x-1/2 -translate-y-1/2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 1, 0] }}
+            transition={{ duration: TOTAL, times: [0, 0.25, 0.5, 1], ease: "linear" }}
+          />
+
           <div
             dir="ltr"
             className="flex items-center text-white font-light tracking-tight leading-none select-none"

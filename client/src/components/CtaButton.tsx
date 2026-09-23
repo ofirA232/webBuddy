@@ -6,17 +6,37 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Blurs the label and marks the button busy while an async action runs. */
   pending?: boolean;
   size?: "md" | "sm";
+  /** "accent" is the primary red fill; "contrast" is the white pill for dark, busy backgrounds. */
+  variant?: "accent" | "contrast";
+  /** Fills the width of its container, as the form's submit does. */
+  block?: boolean;
 };
 
 export const CtaButton = forwardRef<HTMLButtonElement, Props>(function CtaButton(
-  { children, pending = false, size = "md", className, disabled, type = "button", ...rest },
+  {
+    children,
+    pending = false,
+    size = "md",
+    variant = "accent",
+    block = false,
+    className,
+    disabled,
+    type = "button",
+    ...rest
+  },
   ref,
 ) {
   return (
     <button
       ref={ref}
       type={type}
-      className={cn("cta-button", size === "sm" && "cta-button--sm", className)}
+      className={cn(
+        "cta-button",
+        size === "sm" && "cta-button--sm",
+        variant === "accent" && "cta-button--accent",
+        block && "cta-button--block",
+        className,
+      )}
       aria-busy={pending || undefined}
       disabled={disabled || pending}
       {...rest}

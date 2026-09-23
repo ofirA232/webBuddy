@@ -66,7 +66,7 @@ const Hero = () => {
               </p>
             </div>
             <div className="hero-item" style={item(3)}>
-              <CtaButton onClick={scrollToContact}>יצירת קשר</CtaButton>
+              <CtaButton onClick={scrollToContact} variant="accent">יצירת קשר</CtaButton>
             </div>
           </div>
 

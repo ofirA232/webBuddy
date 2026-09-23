@@ -159,7 +159,8 @@ const SkillsSection = () => {
       <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
         <Reveal className="mx-auto max-w-3xl text-center">
           {/* TODO(user): approve or edit this copy */}
-          <h2 className="text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
+          <p className="section-eyebrow">שירותים</p>
+          <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
             בונה, מעצב ומקדם נוכחות דיגיטלית.
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">

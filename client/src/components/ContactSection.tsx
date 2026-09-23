@@ -1,9 +1,11 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
+import { TriangleAlert } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import { cn } from "@/lib/utils";
 import { EASE_OUT, exitTransition } from "@/lib/motion";
+import { CtaButton } from "./CtaButton";
 import { Reveal } from "./motion/Reveal";
 
 const EMAILJS = {
@@ -107,7 +109,7 @@ const ContactSection = () => {
       <div className="container relative mx-auto max-w-7xl px-4 pb-24 pt-[15.5rem] sm:px-6 md:pb-32 md:pt-[16.5rem] lg:px-8">
         {/* TODO(user): approve or edit this copy */}
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="contact-eyebrow text-[13px] font-semibold tracking-[0.12em]">יצירת קשר</p>
+          <p className="section-eyebrow">יצירת קשר</p>
           <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-5xl">
             בוא נעבוד יחד
           </h2>
@@ -133,7 +135,7 @@ const ContactSection = () => {
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="contact-eyebrow mb-5 h-14 w-14"
+                  className="accent-text mb-5 h-14 w-14"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1.75}
@@ -174,9 +176,10 @@ const ContactSection = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1, transition: { duration: 0.15 } }}
                       exit={{ opacity: 0, transition: exitTransition }}
-                      className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 sm:col-span-2"
+                      className="flex items-start gap-2.5 rounded-lg border border-[rgb(var(--warn)/0.35)] bg-[rgb(var(--warn)/0.12)] px-4 py-3 text-sm text-[rgb(var(--warn))] sm:col-span-2"
                     >
-                      {error}
+                      <TriangleAlert size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+                      <span>{error}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -275,21 +278,9 @@ const ContactSection = () => {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    aria-busy={submitting || undefined}
-                    className="contact-submit h-12 w-full rounded-full text-[15px] font-semibold text-white disabled:cursor-wait disabled:opacity-80"
-                  >
-                    <span
-                      className={cn(
-                        "inline-block transition-[filter,opacity] duration-200",
-                        submitting && "opacity-70 blur-[2px]",
-                      )}
-                    >
-                      {submitting ? "שולח..." : "שליחה"}
-                    </span>
-                  </button>
+                  <CtaButton type="submit" variant="accent" block pending={submitting}>
+                    {submitting ? "שולח..." : "שליחה"}
+                  </CtaButton>
                   <p className="mt-4 text-center text-[12px] text-white/40">
                     הפרטים שלך נשארים אצלי ולא מועברים לאף אחד.
                   </p>
