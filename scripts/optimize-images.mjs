@@ -20,7 +20,7 @@
  * Re-running is idempotent.
  */
 import sharp from "sharp";
-import { mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
@@ -30,6 +30,8 @@ const run = promisify(execFile);
 const root = path.resolve(import.meta.dirname, "..");
 const SOURCE_EXT = /\.(png|jpe?g|webp|avif)$/i;
 const VIDEO_EXT = /\.(mp4|mov|m4v|webm|avi)$/i;
+/** Listing file for work that lives on YouTube rather than in the folder. */
+const YOUTUBE_LIST = "youtube.txt";
 
 const sets = [
   { src: "assets-src/projects", out: "client/src/assets/projects", widths: [1280, 640] },
@@ -92,10 +94,12 @@ async function probeVideo(input) {
 async function processSet({ src, out, widths, manifest, video }) {
   const srcDir = path.join(root, src);
   const outDir = path.join(root, out);
-  const images = await listFiles(srcDir, SOURCE_EXT);
+  // `<name>.poster.jpg` is the still for a video, not a piece of its own.
+  const images = (await listFiles(srcDir, SOURCE_EXT)).filter((f) => !/\.poster\./i.test(f));
   const videos = video ? await listFiles(srcDir, VIDEO_EXT) : [];
+  const youtube = video ? await readYoutubeList(srcDir) : [];
 
-  if (images.length === 0 && videos.length === 0) {
+  if (images.length === 0 && videos.length === 0 && youtube.length === 0) {
     console.log(`  (nothing in ${src})`);
     // An empty manifest still has to exist, or the module that imports it fails to build.
     if (manifest) await writeManifest(outDir, out, {});
@@ -184,7 +188,116 @@ async function processSet({ src, out, widths, manifest, video }) {
     console.log(`  ${src}/${file} -> ${out}/${name}.poster.webp (+@${posterSmall})`);
   }
 
+  for (const entry of youtube) {
+    const [posterWidth, posterSmall] = widths;
+    const poster = await youtubeposter(entry, srcDir, outDir, posterWidth, posterSmall);
+    pieces[entry.name] = {
+      type: "youtube",
+      videoId: entry.id,
+      // The declared shape, not the thumbnail's: a Short's thumbnail is often a 16:9
+      // frame with the vertical video sitting inside it. The long side is the one
+      // pinned to 900, so the numbers describe the shape whichever way round it is.
+      width: Math.round(entry.ratio >= 1 ? 900 : 900 * entry.ratio),
+      height: Math.round(entry.ratio >= 1 ? 900 / entry.ratio : 900),
+      poster,
+    };
+    console.log(`  youtube ${entry.id} -> ${out}/${entry.name}.poster.webp ${poster ? "" : "(no poster; the page falls back to YouTube's own thumbnail)"}`);
+  }
+
   if (manifest) await writeManifest(outDir, out, pieces);
+}
+
+/**
+ * `01-name = https://youtu.be/ID` per line, `#` for comments, and an optional
+ * `| 4:5` to declare a shape the URL does not imply.
+ */
+async function readYoutubeList(srcDir) {
+  let text;
+  try {
+    text = await readFile(path.join(srcDir, YOUTUBE_LIST), "utf8");
+  } catch {
+    return [];
+  }
+
+  const entries = [];
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+
+    const [left, ...rest] = line.split("=");
+    if (rest.length === 0) {
+      console.log(`  ${YOUTUBE_LIST}: skipped, no "=" -> ${line.slice(0, 60)}`);
+      continue;
+    }
+    const [urlPart, shapePart] = rest.join("=").split("|");
+    const url = urlPart.trim();
+    const id = youtubeId(url);
+    if (!id) {
+      console.log(`  ${YOUTUBE_LIST}: skipped, no video id -> ${url.slice(0, 60)}`);
+      continue;
+    }
+
+    let ratio = /\/shorts\//.test(url) ? 9 / 16 : 16 / 9;
+    if (shapePart) {
+      const [w, h] = shapePart.trim().split(/[:/]/).map(Number);
+      if (w > 0 && h > 0) ratio = w / h;
+    }
+    entries.push({ name: left.trim(), id, ratio });
+  }
+  return entries.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function youtubeId(url) {
+  const match = url.match(/(?:v=|\/shorts\/|\/embed\/|youtu\.be\/|\/live\/)([A-Za-z0-9_-]{6,})/);
+  return match ? match[1] : null;
+}
+
+/**
+ * The poster comes from a file beside the listing if there is one, and otherwise from
+ * YouTube. Fetching is best effort: on a machine that cannot reach YouTube the entry
+ * is still written, and the page falls back to YouTube's thumbnail at runtime.
+ */
+async function youtubeposter(entry, srcDir, outDir, width, small) {
+  let input = null;
+
+  for (const ext of ["jpg", "jpeg", "png", "webp"]) {
+    const candidate = path.join(srcDir, `${entry.name}.poster.${ext}`);
+    try {
+      await stat(candidate);
+      input = candidate;
+      break;
+    } catch {
+      // keep looking
+    }
+  }
+
+  if (!input) {
+    for (const quality of ["maxresdefault", "sddefault", "hqdefault"]) {
+      try {
+        const response = await fetch(`https://i.ytimg.com/vi/${entry.id}/${quality}.jpg`, {
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!response.ok) continue;
+        input = Buffer.from(await response.arrayBuffer());
+        break;
+      } catch {
+        // offline, blocked, or no such thumbnail: try the next size, then give up
+      }
+    }
+  }
+
+  if (!input) return false;
+
+  for (const [i, w] of [width, small].entries()) {
+    const outName = i === 0 ? `${entry.name}.poster.webp` : `${entry.name}.poster@${w}.webp`;
+    await sharp(input)
+      // Cropped to the declared shape, so a vertical video does not show as a
+      // letterboxed 16:9 frame inside a vertical tile.
+      .resize({ width: w, height: Math.round(w / entry.ratio), fit: "cover" })
+      .webp({ quality: 80 })
+      .toFile(path.join(outDir, outName));
+  }
+  return true;
 }
 
 async function writeManifest(outDir, out, dimensions) {

@@ -15,7 +15,7 @@ import manifest from "@/assets/creative/manifest.json";
 
 export type CreativePiece = {
   id: string;
-  kind: "image" | "video";
+  kind: "image" | "video" | "youtube";
   /** Description for screen readers. The wall itself is captionless, like the design. */
   alt: string;
   /** Still, or the poster frame of a video. */
@@ -23,6 +23,8 @@ export type CreativePiece = {
   small?: string;
   /** The video file itself, for `kind: "video"`. */
   video?: string;
+  /** The YouTube video id, for `kind: "youtube"`. */
+  youtubeId?: string;
   /** width / height, from the manifest, so a tile is the shape of its own piece. */
   ratio: number;
 };
@@ -36,7 +38,14 @@ const OVERRIDES: Record<string, { alt?: string }> = {};
 
 const DEFAULT_RATIO = 4 / 5;
 
-type ManifestEntry = { type?: "image" | "video"; width: number; height: number };
+type ManifestEntry = {
+  type?: "image" | "video" | "youtube";
+  width: number;
+  height: number;
+  /** For `youtube`: the id, and whether a poster was written locally. */
+  videoId?: string;
+  poster?: boolean;
+};
 
 const assets = import.meta.glob("../assets/creative/*.{webp,mp4}", {
   eager: true,
@@ -58,23 +67,36 @@ function titleFromName(name: string) {
 function build(): CreativePiece[] {
   const entries = Object.entries(manifest as Record<string, ManifestEntry>);
 
-  const pieces = entries.map(([name, entry]) => {
-    const isVideo = entry.type === "video";
-    // A video's still is its poster frame; an image is its own still.
-    const stem = isVideo ? `${name}.poster` : name;
+  const pieces: CreativePiece[] = entries.map(([name, entry]) => {
+    const kind: CreativePiece["kind"] =
+      entry.type === "video" || entry.type === "youtube" ? entry.type : "image";
+    // Anything with a moving picture is represented by a poster frame; a still is itself.
+    const stem = kind === "image" ? name : `${name}.poster`;
     return {
       id: name,
-      kind: isVideo ? ("video" as const) : ("image" as const),
+      kind,
       alt: OVERRIDES[name]?.alt ?? titleFromName(name),
-      src: byName[`${stem}.webp`],
+      // A YouTube entry whose poster could not be fetched falls back to YouTube's own
+      // thumbnail, so the wall still shows the piece rather than an empty tile.
+      src:
+        byName[`${stem}.webp`] ??
+        (kind === "youtube" && entry.videoId ? youtubeThumbnail(entry.videoId) : undefined),
       small: byName[`${stem}@480.webp`],
-      video: isVideo ? byName[`${name}.mp4`] : undefined,
+      video: kind === "video" ? byName[`${name}.mp4`] : undefined,
+      youtubeId: kind === "youtube" ? entry.videoId : undefined,
       ratio: entry.height ? entry.width / entry.height : DEFAULT_RATIO,
     };
   });
 
   // Anything the manifest lists but the folder no longer holds is a stale entry.
   return pieces.filter((p) => p.src).sort((a, b) => a.id.localeCompare(b.id, "he"));
+}
+
+const youtubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+
+export function youtubeEmbedUrl(id: string) {
+  // nocookie, and no related videos from other channels at the end.
+  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
 }
 
 /**

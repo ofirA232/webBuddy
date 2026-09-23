@@ -10,6 +10,7 @@ import {
   GalleryCol,
   GalleryContainer,
 } from "@/components/ui/animated-gallery";
+import { CreativeLightbox } from "@/components/CreativeLightbox";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { creativeWall, packColumns, type CreativePiece } from "@/data/creativeData";
 import { cn } from "@/lib/utils";
@@ -173,29 +174,7 @@ function VideoTile({
   }, [reduce]);
 
   if (reduce && !started) {
-    return (
-      <button
-        type="button"
-        onClick={() => setStarted(true)}
-        className="group relative block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-      >
-        <ResponsiveImage
-          src={piece.src!}
-          small={piece.small}
-          widths={[480, 900]}
-          sizes={sizes}
-          alt={piece.alt}
-          className={cn("block size-full", fitClass)}
-          loading="lazy"
-        />
-        <span className="absolute inset-0 flex items-center justify-center bg-black/40">
-          <span className="flex size-12 items-center justify-center rounded-full bg-white/90 text-black">
-            <Play className="size-5 translate-x-[1px]" aria-hidden="true" />
-          </span>
-        </span>
-        <span className="sr-only">נגן את הסרטון: {piece.alt}</span>
-      </button>
-    );
+    return <PosterButton piece={piece} fitClass={fitClass} sizes={sizes} onPlay={() => setStarted(true)} />;
   }
 
   return (
@@ -215,6 +194,43 @@ function VideoTile({
   );
 }
 
+/** A still of the piece with a play badge over it, which is all a tile shows until asked. */
+function PosterButton({
+  piece,
+  fitClass,
+  sizes,
+  onPlay,
+}: {
+  piece: CreativePiece;
+  fitClass: string;
+  sizes: string;
+  onPlay: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onPlay}
+      className="group relative block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+    >
+      <ResponsiveImage
+        src={piece.src!}
+        small={piece.small}
+        widths={[480, 900]}
+        sizes={sizes}
+        alt={piece.alt}
+        className={cn("block size-full", fitClass)}
+        loading="lazy"
+      />
+      <span className="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors duration-200 can-hover:group-hover:bg-black/50">
+        <span className="flex size-12 items-center justify-center rounded-full bg-white/90 text-black transition-transform duration-200 ease-out-strong can-hover:group-hover:scale-110">
+          <Play className="size-5 translate-x-[1px] fill-current" aria-hidden="true" />
+        </span>
+      </span>
+      <span className="sr-only">נגן את הסרטון: {piece.alt}</span>
+    </button>
+  );
+}
+
 type WallPiece = CreativePiece & {
   /** The tile's shape: the piece's own, unless that would not fit the frame. */
   displayRatio: number;
@@ -226,11 +242,13 @@ function Piece({
   index,
   reduce,
   sizes,
+  onOpen,
 }: {
   piece: WallPiece;
   index: number;
   reduce: boolean;
   sizes: string;
+  onOpen: (piece: WallPiece) => void;
 }) {
   const fitClass = piece.fit === "contain" ? "object-contain" : "object-cover";
   return (
@@ -240,7 +258,9 @@ function Piece({
       className="w-full flex-none overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] shadow-lg shadow-black/40"
       style={{ aspectRatio: piece.displayRatio }}
     >
-      {piece.kind === "video" && piece.video ? (
+      {piece.kind === "youtube" ? (
+        <PosterButton piece={piece} fitClass={fitClass} sizes={sizes} onPlay={() => onOpen(piece)} />
+      ) : piece.kind === "video" && piece.video ? (
         <VideoTile piece={piece} reduce={reduce} fitClass={fitClass} sizes={sizes} />
       ) : piece.src ? (
         <ResponsiveImage
@@ -265,6 +285,7 @@ function Piece({
 }
 
 export function CreativeSection() {
+  const [playing, setPlaying] = useState<WallPiece | null>(null);
   const columnCount = useColumnCount();
   const reduce = useReducedMotion() ?? false;
   const gapPx = columnCount === 2 ? 8 : 12; // matches gap-2 / sm:gap-3
@@ -345,6 +366,7 @@ export function CreativeSection() {
                     index={columnIndex * 5 + i}
                     reduce={reduce}
                     sizes={sizes}
+                    onOpen={setPlaying}
                   />
                 ))}
               </GalleryCol>
@@ -366,6 +388,8 @@ export function CreativeSection() {
           )}
         </ContainerSticky>
       </ContainerScroll>
+
+      <CreativeLightbox piece={playing} onClose={() => setPlaying(null)} />
     </section>
   );
 }
