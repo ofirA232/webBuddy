@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { ArrowRight, Globe, Github } from "lucide-react";
+import { ArrowLeft, ArrowRight, Globe, Github } from "lucide-react";
 import { projects } from "@/data/portfolioData";
 import { site } from "@/data/site";
 import { TransitionLink } from "@/lib/viewTransition";
@@ -11,7 +11,10 @@ import NotFound from "./not-found";
 
 const ProjectDetail = () => {
   const { slug } = useParams();
-  const project = projects.find((p) => p.slug === slug);
+  const index = projects.findIndex((p) => p.slug === slug);
+  const project = index >= 0 ? projects[index] : undefined;
+  // Wraps around, so the last project still leads somewhere instead of ending the visit.
+  const next = projects.length > 1 ? projects[(index + 1) % projects.length] : undefined;
 
   useEffect(() => {
     if (project) {
@@ -26,7 +29,8 @@ const ProjectDetail = () => {
   const liveUrl = project.liveUrl || project.demoUrl;
 
   return (
-    <div className="container mx-auto py-12 px-4 min-h-screen">
+    // Keyed by project: moving to the next one remounts the page, so its entrance plays again.
+    <div key={project.slug} className="container mx-auto py-12 px-4 min-h-screen">
       {/* Steps back in history so the projects grid returns at the scroll position it was left at. */}
       <TransitionLink
         to="/#projects"
@@ -122,8 +126,10 @@ const ProjectDetail = () => {
 
         {/* Image column */}
         <div className="order-1 lg:order-2">
-          <div className="sticky top-8">
-            <div className="rounded-2xl overflow-hidden shadow-2xl aspect-video bg-[#161616]">
+          {/* Clears the sticky header (57–65px), which would otherwise cover the top of the image. */}
+          <div className="sticky top-24">
+            {/* Unveiled top-down like the hero photo, so it arrives with the text rather than before it. */}
+            <div className="media-reveal rounded-xl overflow-hidden shadow-2xl aspect-video bg-[#161616]">
               {project.image ? (
                 <ResponsiveImage
                   src={project.image}
@@ -168,6 +174,28 @@ const ProjectDetail = () => {
           </div>
         </div>
       </div>
+
+      {next && (
+        <Reveal className="mt-20 border-t border-white/10 pt-10 md:mt-28">
+          {/* Replaces this entry rather than stacking one per project, so "back to projects"
+              still returns to the grid however many projects were browsed in between. */}
+          <TransitionLink
+            to={`/project/${next.slug}`}
+            replace
+            className="group pressable-card flex items-center justify-between gap-6 text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black"
+          >
+            <span>
+              <span className="section-eyebrow block">הפרויקט הבא</span>
+              <span className="mt-3 block text-2xl font-light leading-tight tracking-tight text-white md:text-4xl">
+                {next.title}
+              </span>
+            </span>
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-white/15 text-white transition-[transform,background-color] duration-200 ease-out-strong can-hover:group-hover:-translate-x-1 can-hover:group-hover:bg-white/[0.08] md:size-14">
+              <ArrowLeft size={22} aria-hidden="true" />
+            </span>
+          </TransitionLink>
+        </Reveal>
+      )}
     </div>
   );
 };

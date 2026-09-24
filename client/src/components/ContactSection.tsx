@@ -5,6 +5,7 @@ import { TriangleAlert } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import { cn } from "@/lib/utils";
 import { EASE_OUT, exitTransition } from "@/lib/motion";
+import { site } from "@/data/site";
 import { CtaButton } from "./CtaButton";
 import { Reveal } from "./motion/Reveal";
 
@@ -24,8 +25,9 @@ type FormState = {
 
 const EMPTY: FormState = { firstName: "", lastName: "", email: "", phone: "", message: "" };
 
+// 16px on phones: iOS zooms the whole page into any field set smaller than that.
 const inputClass =
-  "contact-input h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 text-sm text-white placeholder:text-white/30";
+  "contact-input h-11 w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3.5 text-base text-white placeholder:text-white/30 sm:text-sm";
 
 function Field({
   id,
@@ -116,6 +118,19 @@ const ContactSection = () => {
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
             ספר לי קצת על הפרויקט שלך, ואחזור אליך בהקדם עם כל המידע שצריך.
           </p>
+          {site.whatsapp && (
+            <p className="mt-4 text-sm text-white/50">
+              מעדיפים וואטסאפ?{" "}
+              <a
+                href={site.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="accent-text font-medium underline decoration-[rgb(var(--accent-soft)/0.4)] underline-offset-4 can-hover:hover:decoration-[rgb(var(--accent-soft))]"
+              >
+                <span dir="ltr">{site.phone}</span>
+              </a>
+            </p>
+          )}
         </Reveal>
 
         <Reveal

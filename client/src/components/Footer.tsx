@@ -10,7 +10,7 @@ const Footer = () => {
           </div>
           {site.email && (
             <a
-              className="text-white text-xs sm:text-sm hover:text-gray-300 transition-colors order-1 md:order-2"
+              className="pressable text-white text-xs sm:text-sm can-hover:hover:text-gray-300 order-1 md:order-2"
               href={`mailto:${site.email}`}
               dir="ltr"
             >

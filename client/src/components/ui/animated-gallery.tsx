@@ -3,7 +3,6 @@ import * as React from "react";
 import {
   type HTMLMotionProps,
   type MotionValue,
-  type Variants,
   motion,
   useReducedMotion,
   useScroll,
@@ -29,19 +28,6 @@ interface ContainerScrollContextValue {
   /** True when the visitor asked for less motion; children render flat. */
   reduce: boolean;
 }
-
-const SPRING_CONFIG = {
-  type: "spring",
-  stiffness: 100,
-  damping: 16,
-  mass: 0.75,
-  restDelta: 0.005,
-} as const;
-
-const blurVariants: Variants = {
-  hidden: { filter: "blur(10px)", opacity: 0 },
-  visible: { filter: "blur(0px)", opacity: 1 },
-};
 
 const ContainerScrollContext = React.createContext<ContainerScrollContextValue | undefined>(
   undefined,
@@ -167,37 +153,3 @@ export const GalleryCol = ({
   );
 };
 GalleryCol.displayName = "GalleryCol";
-
-export const ContainerStagger = React.forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
-  ({ className, viewport, transition, ...props }, ref) => {
-    return (
-      <motion.div
-        className={cn("relative", className)}
-        ref={ref}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, ...viewport }}
-        transition={{ staggerChildren: 0.2, ...transition }}
-        {...props}
-      />
-    );
-  },
-);
-ContainerStagger.displayName = "ContainerStagger";
-
-export const ContainerAnimated = React.forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
-  ({ className, transition, ...props }, ref) => {
-    const reduce = useReducedMotion() ?? false;
-    return (
-      <motion.div
-        ref={ref}
-        className={cn(className)}
-        // Animating `filter` is the expensive half of this; reduced motion keeps the fade.
-        variants={reduce ? { hidden: { opacity: 0 }, visible: { opacity: 1 } } : blurVariants}
-        transition={transition ?? (reduce ? { duration: 0.2 } : SPRING_CONFIG)}
-        {...props}
-      />
-    );
-  },
-);
-ContainerAnimated.displayName = "ContainerAnimated";

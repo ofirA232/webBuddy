@@ -16,7 +16,7 @@ const NotFound = () => {
         to="/"
         direction="back"
         historyBack
-        className="flex w-fit items-center justify-center rounded-full h-10 px-6 bg-white text-black text-base font-bold hover:bg-gray-200 transition-colors"
+        className="flex w-fit items-center justify-center rounded-full h-10 px-6 bg-white text-black text-base font-bold can-hover:hover:bg-gray-200 pressable"
       >
         חזרה לדף הבית
       </Link>

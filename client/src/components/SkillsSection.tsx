@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { CircleCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useActiveSection } from "@/hooks/useActiveSection";
 import { Reveal } from "./motion/Reveal";
 import codeEditing_icon from "../assets/codeEditing_icon.svg";
 import api_integration_icon from "../assets/api_integration_icon.svg";
@@ -109,50 +110,10 @@ const services: Service[] = [
 
 const labelClass = "text-[11px] font-medium uppercase tracking-[0.08em] text-white/45";
 
-/** A third of the way down the viewport: the line a heading has to cross to become current. */
-const READING_LINE = 0.33;
-
-/**
- * Highlights whichever service is currently being read: the last one whose heading has
- * passed the reading line. Picking the last match rather than the first intersecting
- * element means every service takes its turn, including the one at the end.
- */
-function useActiveService(keys: string[]) {
-  const [active, setActive] = useState(keys[0]);
-  const frame = useRef(0);
-
-  useEffect(() => {
-    const update = () => {
-      frame.current = 0;
-      const line = window.innerHeight * READING_LINE;
-      let current = keys[0];
-      for (const key of keys) {
-        const element = document.getElementById(`service-${key}`);
-        if (element && element.getBoundingClientRect().top <= line) current = key;
-      }
-      setActive(current);
-    };
-    // Coalesce to one measurement per frame; reading layout on every scroll event is wasteful.
-    const schedule = () => {
-      if (!frame.current) frame.current = window.requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      if (frame.current) window.cancelAnimationFrame(frame.current);
-    };
-  }, [keys]);
-
-  return active;
-}
-
 const SkillsSection = () => {
-  const keys = useMemo(() => services.map((service) => service.key), []);
-  const active = useActiveService(keys);
+  // The last service whose heading has passed the reading line, same as the header's tabs.
+  const ids = useMemo(() => services.map((service) => `service-${service.key}`), []);
+  const active = useActiveSection(ids)?.replace(/^service-/, "");
 
   return (
     <section id="skills" dir="rtl">
@@ -221,7 +182,7 @@ const SkillsSection = () => {
                     </ul>
                   </div>
 
-                  <div className="aspect-[4/3] w-full overflow-hidden rounded bg-[#0f0f0f]">
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-[#0f0f0f]">
                     {service.image ? (
                       <img
                         src={service.image}

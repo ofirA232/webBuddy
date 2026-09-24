@@ -1,9 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Rect = { left: number; width: number };
+/** Where a tab sits, as distances from the strip's two edges. */
+type Rect = { left: number; right: number };
 
-const EMPTY: Rect = { left: 0, width: 0 };
+/** Nothing measured yet: a clip collapsed onto the left edge, as the old zero width was. */
+const EMPTY: Rect = { left: 0, right: Number.POSITIVE_INFINITY };
+
+/**
+ * The indicators span the whole strip and are cut down to one tab with clip-path, so moving
+ * between tabs animates a clip (paint only) rather than left/width, which re-lays out the
+ * page every frame. `round` keeps the corners true at any width, which scaleX would squash.
+ */
+const clipTo = ({ left, right }: Rect, radius: number) =>
+  `inset(0 ${Number.isFinite(right) ? `${right}px` : "100%"} 0 ${left}px round ${radius}px)`;
 
 /** The class the caller should put on its link, so every tab measures the same. */
 export const NAV_TAB_CLASS = "block px-3 py-2 text-sm font-medium leading-5 whitespace-nowrap";
@@ -46,7 +56,10 @@ export function NavTabs({
 
   const measure = (index: number): Rect => {
     const element = itemRefs.current[index];
-    return element ? { left: element.offsetLeft, width: element.offsetWidth } : EMPTY;
+    const strip = element?.offsetParent as HTMLElement | null;
+    if (!element || !strip) return EMPTY;
+    const left = element.offsetLeft;
+    return { left, right: strip.offsetWidth - left - element.offsetWidth };
   };
 
   useLayoutEffect(() => {
@@ -72,7 +85,7 @@ export function NavTabs({
 
   // Nothing slides for anyone who asked for less motion; the indicator just moves.
   const slide = ready
-    ? "transition-[left,width,opacity] duration-200 ease-out-strong motion-reduce:transition-none"
+    ? "transition-[clip-path,opacity] duration-200 ease-out-strong motion-reduce:transition-none"
     : "";
 
   return (
@@ -85,20 +98,20 @@ export function NavTabs({
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute top-1/2 hidden h-[30px] -translate-y-1/2 rounded-md bg-white/[0.08] can-hover:block",
+          "pointer-events-none absolute inset-x-0 top-1/2 hidden h-[30px] -translate-y-1/2 bg-white/[0.08] can-hover:block",
           slide,
         )}
-        style={{ ...hoverRect, opacity: hovered === null ? 0 : 1 }}
+        style={{ clipPath: clipTo(hoverRect, 6), opacity: hovered === null ? 0 : 1 }}
       />
 
       {/* Active underline. */}
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute -bottom-1.5 h-[2px] rounded-full bg-[rgb(var(--accent))]",
+          "pointer-events-none absolute inset-x-0 -bottom-1.5 h-[2px] bg-[rgb(var(--accent))]",
           slide,
         )}
-        style={{ ...activeRect, opacity: activeIndex >= 0 ? 1 : 0 }}
+        style={{ clipPath: clipTo(activeRect, 1), opacity: activeIndex >= 0 ? 1 : 0 }}
       />
 
       <div className="relative flex items-center gap-x-1.5">

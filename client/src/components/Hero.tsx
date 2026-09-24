@@ -41,7 +41,7 @@ const Hero = () => {
   return (
     <section
       id="about"
-      className="relative w-full overflow-hidden min-h-[75vh] md:min-h-screen flex items-center"
+      className="relative w-full overflow-hidden min-h-[75svh] md:min-h-svh flex items-center"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >

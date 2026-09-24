@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useLocation } from "react-router-dom";
 import { site } from "@/data/site";
 import { useActiveSection } from "@/hooks/useActiveSection";
@@ -7,6 +7,12 @@ import { NavTabs, NAV_TAB_CLASS } from "./NavTabs";
 import { TransitionLink as Link } from "@/lib/viewTransition";
 
 const socialLinks = [
+  {
+    key: "whatsapp",
+    href: site.whatsapp,
+    label: "שליחת הודעה בוואטסאפ",
+    path: "M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z",
+  },
   {
     key: "github",
     href: site.social.github,
@@ -38,6 +44,29 @@ const Header = () => {
   // The underline follows what is on screen, not the last link clicked: with a marker this
   // visible, leaving it on "about" while the visitor reads the projects would read as broken.
   const activeSection = useActiveSection(onHome ? site.navLinks.map((link) => link.section) : []);
+
+  // While the menu is open the page stays put under it, and Escape closes it. Widening
+  // past the phone layout closes it too, or the hidden menu would leave the page locked.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    const close = () => setMobileMenuOpen(false);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const onWiden = (event: MediaQueryListEvent) => {
+      if (event.matches) close();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    desktop.addEventListener("change", onWiden);
+    return () => {
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onWiden);
+    };
+  }, [mobileMenuOpen]);
 
   const isActive = (section: string) => onHome && section === activeSection;
 
@@ -71,7 +100,8 @@ const Header = () => {
                   ></path>
                 </svg>
               </div>
-              <h2 className="text-white text-base sm:text-lg font-bold">{site.name}</h2>
+              {/* Not a heading: it would sit above every page's h1 in the outline. */}
+              <span className="text-white text-base sm:text-lg font-bold">{site.name}</span>
             </Link>
           </div>
 
@@ -181,6 +211,30 @@ const Header = () => {
               </Link>
             ))}
           </nav>
+
+          {/* The desktop row of icons is hidden on phones, where WhatsApp matters most. */}
+          {socialLinks.length > 0 && (
+            <div
+              className="mobile-menu-link flex gap-2 border-t border-[#333333] py-4"
+              style={{ transitionDelay: mobileMenuOpen ? `${site.navLinks.length * LINK_STAGGER_MS}ms` : "0ms" }}
+            >
+              {socialLinks.map((s) => (
+                <a
+                  key={s.key}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  tabIndex={mobileMenuOpen ? 0 : -1}
+                  className="flex items-center justify-center rounded-full h-11 w-11 bg-[#333333] text-white pressable"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">
+                    <path d={s.path}></path>
+                  </svg>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </header>

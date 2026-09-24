@@ -3,15 +3,14 @@ import { useReducedMotion } from "motion/react";
 import { Play } from "lucide-react";
 
 import {
-  ContainerAnimated,
   ContainerScroll,
-  ContainerStagger,
   ContainerSticky,
   GalleryCol,
   GalleryContainer,
 } from "@/components/ui/animated-gallery";
 import { CreativeLightbox } from "@/components/CreativeLightbox";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
+import { Reveal } from "@/components/motion/Reveal";
 import { creativeWall, isHosted, packColumns, type CreativePiece } from "@/data/creativeData";
 import { cn } from "@/lib/utils";
 
@@ -348,22 +347,16 @@ export function CreativeSection() {
         }}
       />
 
-      <ContainerStagger className="relative z-10 mx-auto max-w-3xl px-4 pt-16 text-center sm:px-6 md:pt-24 lg:px-8">
-        <ContainerAnimated>
-          <p className="section-eyebrow">קריאייטיב</p>
-        </ContainerAnimated>
-        <ContainerAnimated>
-          <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
-            עבודות קריאייטיב
-          </h2>
-        </ContainerAnimated>
-        <ContainerAnimated>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
-            מעבר לקוד יש את החלק שרואים קודם: קריאייטיב לרשתות, באנרים לקמפיינים,
-            סרטונים ונכסים ויזואליים שליוו את המותגים שעבדתי איתם. זה מבחר מהם.
-          </p>
-        </ContainerAnimated>
-      </ContainerStagger>
+      <Reveal className="relative z-10 mx-auto max-w-3xl px-4 pt-16 text-center sm:px-6 md:pt-24 lg:px-8">
+        <p className="section-eyebrow">קריאייטיב</p>
+        <h2 className="mt-4 text-4xl font-light leading-tight tracking-tight text-white md:text-6xl">
+          עבודות קריאייטיב
+        </h2>
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg">
+          מעבר לקוד יש את החלק שרואים קודם: קריאייטיב לרשתות, באנרים לקמפיינים,
+          סרטונים ונכסים ויזואליים שליוו את המותגים שעבדתי איתם. זה מבחר מהם.
+        </p>
+      </Reveal>
 
       <ContainerScroll
         className="relative"

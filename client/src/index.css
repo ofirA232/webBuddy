@@ -64,6 +64,8 @@
 
   body {
     @apply font-sans antialiased bg-black text-white;
+    /* The grey flash on tap reads as a web page; every pressable already answers with its own scale. */
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Keep anchored sections clear of the sticky header. */
@@ -146,14 +148,17 @@ svg.lucide {
   animation-delay: calc(var(--i, 0) * 60ms);
 }
 
-.hero-photo {
+/* Also the screenshot on a project page (.media-reveal). */
+.hero-photo,
+.media-reveal {
   animation: clip-up 600ms var(--ease-out) both;
   animation-delay: 120ms;
 }
 
 /* Hold the hero's entrance while the opening title is on screen, so it plays on handover. */
 :root[data-intro="running"] .hero-item,
-:root[data-intro="running"] .hero-photo {
+:root[data-intro="running"] .hero-photo,
+:root[data-intro="running"] .media-reveal {
   animation-play-state: paused;
 }
 
@@ -176,6 +181,12 @@ svg.lucide {
   border-radius: 9999px;
   will-change: transform;
   animation: aurora-drift 24s ease-in-out infinite;
+}
+
+/* Out of view (HeroBackground.tsx): hold the drift where it is and drop the layer promotion. */
+[data-paused] .aurora-blob {
+  animation-play-state: paused;
+  will-change: auto;
 }
 
 .aurora-blob--core {
@@ -222,7 +233,8 @@ svg.lucide {
   padding-inline-start: 20px;
   font-weight: 300;
   opacity: 0.45;
-  transition: font-weight 500ms var(--ease-out), opacity 500ms var(--ease-out);
+  /* Weight re-lays out the line every frame it changes, so it gets a short window. */
+  transition: font-weight 250ms var(--ease-out), opacity 250ms var(--ease-out);
 }
 
 /* The marker: what makes the current category readable at a glance rather than by weight alone. */
@@ -388,6 +400,51 @@ svg.lucide {
   transform: translateX(0);
 }
 
+/* ---------- Video lightbox (CreativeLightbox.tsx) ----------
+ * Keyframes rather than transitions: Radix holds the dialog mounted until its exit
+ * animation ends, and it only waits for animations. A modal is not anchored to a
+ * trigger, so the player scales from its own centre. Closing is quicker than opening.
+ */
+/* Separate exit keyframes, not `reverse`: a reversed ease-out runs as an ease-in, slow off the mark. */
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes lightbox-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes lightbox-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes lightbox-pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.lightbox-overlay[data-state="open"],
+.lightbox-content[data-state="open"] {
+  animation: lightbox-fade-in 250ms var(--ease-out);
+}
+.lightbox-overlay[data-state="closed"],
+.lightbox-content[data-state="closed"] {
+  animation: lightbox-fade-out 150ms var(--ease-out) forwards;
+}
+
+.lightbox-content[data-state="open"] .lightbox-player {
+  animation: lightbox-pop-in 250ms var(--ease-out);
+}
+.lightbox-content[data-state="closed"] .lightbox-player {
+  animation: lightbox-pop-out 150ms var(--ease-out) forwards;
+}
+
 /* ---------- Page transitions (lib/viewTransition.tsx) ----------
  * The incoming page sweeps over the outgoing one behind a soft radial mask.
  * On a site this dark a mask alone reveals black over black and reads as nothing,
@@ -496,7 +553,8 @@ svg.lucide {
     animation-name: hero-fade;
     animation-duration: 200ms;
   }
-  .hero-photo {
+  .hero-photo,
+  .media-reveal {
     animation: hero-fade 200ms var(--ease-out) both;
   }
   .aurora-blob {
@@ -508,6 +566,11 @@ svg.lucide {
   }
   .mobile-menu-link {
     transform: none;
+  }
+  /* The player fades with the dialog instead of scaling. */
+  .lightbox-content[data-state="open"] .lightbox-player,
+  .lightbox-content[data-state="closed"] .lightbox-player {
+    animation: none;
   }
   .pressable:active,
   .pressable-sm:active,

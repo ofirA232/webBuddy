@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { projects, type Project } from "@/data/portfolioData";
@@ -13,12 +13,9 @@ type Filter = Category | "all";
 
 /** Single source for category names, used by both the filter row and the tags on each card. */
 const CATEGORY_LABELS: Record<Category, string> = {
+  sites: "אתרים",
   apps: "אפליקציות ומערכות",
-  webDev: "בניית אתרים",
-  webDesign: "עיצוב אתרים",
-  branding: "מיתוג",
-  seo: "קידום אתרים",
-  digitalMarketing: "שיווק דיגיטלי",
+  seo: "SEO",
 };
 
 const FILTERS: { id: Filter; label: string }[] = [
@@ -35,21 +32,21 @@ function ProjectCard({ project }: { project: Project }) {
     <article>
       <TransitionLink
         to={`/project/${project.slug}`}
-        className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black"
+        className="group pressable-card block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black"
       >
-        <div className="relative aspect-video w-full overflow-hidden rounded bg-[#141414]">
+        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#141414]">
           {project.image ? (
             <ResponsiveImage
               src={project.image}
               small={project.imageSmall}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               alt=""
-              className="h-full w-full object-cover object-top transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.04]"
+              className="h-full w-full object-cover object-top transition-transform duration-300 ease-out-strong can-hover:group-hover:scale-[1.04]"
             />
           ) : (
             <ProjectPlaceholder
               title={project.title}
-              className="transition-transform duration-500 ease-out-strong can-hover:group-hover:scale-[1.04]"
+              className="transition-transform duration-300 ease-out-strong can-hover:group-hover:scale-[1.04]"
             />
           )}
 
@@ -81,6 +78,96 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
+/** Where the selected filter sits inside the row, in px from each edge. */
+type Inset = { top: number; right: number; bottom: number; left: number };
+
+// Narrower on phones, so all four fit on one line from 390px instead of leaving SEO on its own.
+// Narrower screens still wrap; the pill follows onto the second line.
+const FILTER_CLASS = "rounded-full px-3.5 py-2 text-sm font-medium sm:px-5";
+
+/**
+ * The selected filter is a red pill that slides to the next one. The row is drawn twice:
+ * plain underneath, and an all-red copy on top clipped down to the selected button. Moving
+ * the clip moves the fill and the white label as one, which timing a background slide
+ * against separate colour changes on each label never quite does.
+ *
+ * Both copies use the same weight, so their labels land on exactly the same pixels.
+ */
+function FilterRow({ selected, onSelect }: { selected: Filter; onSelect: (filter: Filter) => void }) {
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const [inset, setInset] = useState<Inset | null>(null);
+  // Nothing slides on the first paint: the pill starts where it belongs.
+  const [ready, setReady] = useState(false);
+  const index = FILTERS.findIndex((filter) => filter.id === selected);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const button = buttons.current[index];
+      const row = button?.offsetParent as HTMLElement | null;
+      if (!button || !row) return;
+      setInset({
+        top: button.offsetTop,
+        left: button.offsetLeft,
+        right: row.offsetWidth - button.offsetLeft - button.offsetWidth,
+        bottom: row.offsetHeight - button.offsetTop - button.offsetHeight,
+      });
+    };
+    measure();
+    // Labels reflow when the webfont lands, and the row can wrap as the window narrows.
+    window.addEventListener("resize", measure);
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => window.removeEventListener("resize", measure);
+  }, [index]);
+
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => setReady(true));
+    return () => window.cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <div className="relative" role="group" aria-label="סינון לפי קטגוריה">
+      <div className="flex flex-wrap justify-center gap-2">
+        {FILTERS.map((filter, i) => (
+          <button
+            key={filter.id}
+            ref={(element) => {
+              buttons.current[i] = element;
+            }}
+            type="button"
+            onClick={() => onSelect(filter.id)}
+            aria-pressed={selected === filter.id}
+            className={cn(
+              FILTER_CLASS,
+              "pressable text-white/45 can-hover:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+            )}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
+      {inset && (
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 flex flex-wrap justify-center gap-2 bg-[rgb(var(--accent))]",
+            ready && "transition-[clip-path] duration-200 ease-out-strong motion-reduce:transition-none",
+          )}
+          style={{
+            clipPath: `inset(${inset.top}px ${inset.right}px ${inset.bottom}px ${inset.left}px round 9999px)`,
+          }}
+        >
+          {FILTERS.map((filter) => (
+            <span key={filter.id} className={cn(FILTER_CLASS, "text-white")}>
+              {filter.label}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Portfolio() {
   const [selected, setSelected] = useState<Filter>("all");
   const reduce = useReducedMotion() ?? false;
@@ -102,29 +189,8 @@ export function Portfolio() {
           </p>
         </Reveal>
 
-        {/* Filter row: the selected filter is a solid pill, the rest are plain text. */}
-        <Reveal delay={0.1} className="mt-12 flex flex-wrap justify-center gap-2 md:mt-16">
-          <div className="contents" role="group" aria-label="סינון לפי קטגוריה">
-            {FILTERS.map((filter) => {
-              const isSelected = selected === filter.id;
-              return (
-                <button
-                  key={filter.id}
-                  type="button"
-                  onClick={() => setSelected(filter.id)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "pressable rounded-full px-5 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
-                    isSelected
-                      ? "bg-[rgb(var(--accent))] font-medium text-white"
-                      : "text-white/45 can-hover:hover:text-white",
-                  )}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
+        <Reveal delay={0.1} className="mt-12 flex justify-center md:mt-16">
+          <FilterRow selected={selected} onSelect={setSelected} />
         </Reveal>
 
         {visible.length === 0 ? (

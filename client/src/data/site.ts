@@ -10,6 +10,9 @@ export const site = {
     "אופיר זנגי, מנהל דיגיטל ובונה אתרי וורדפרס. אתרי תדמית, מרכזי ידע ומערכות פנימיות, עם דגש על עיצוב, SEO ותוצאות.",
   url: "", // TODO(user): canonical URL, e.g. https://ofirzangi.com (used for og:url)
   email: "", // TODO(user): contact email, shown in the footer when set
+  /** Shown as written; the WhatsApp link uses the international form of the same number. */
+  phone: "054-914-0830",
+  whatsapp: "https://wa.me/972549140830",
   social: {
     github: "https://github.com/ofirA232",
     linkedin: "https://www.linkedin.com/in/ofir-zangi-abc123/",

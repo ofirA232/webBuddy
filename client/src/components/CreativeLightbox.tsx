@@ -11,6 +11,10 @@ import { embedUrl, type CreativePiece } from "@/data/creativeData";
  * of player before it shows a single frame, and a wall of a dozen of them would cost
  * more than the whole rest of the page. The iframe is only created once someone asks
  * for it, and is destroyed again on close, which also stops playback.
+ *
+ * Open and close are animated in index.css (.lightbox-*): Radix keeps the content mounted
+ * until its exit animation ends, so the last piece is held on to for that moment rather
+ * than the player emptying out while it fades.
  */
 export function CreativeLightbox({
   piece,
@@ -20,13 +24,17 @@ export function CreativeLightbox({
   onClose: () => void;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  const src = piece ? embedUrl(piece) : null;
-  const open = src !== null;
+  const lastPiece = useRef(piece);
+  if (piece) lastPiece.current = piece;
+  const shown = piece ?? lastPiece.current;
+
+  const open = piece !== null && embedUrl(piece) !== null;
+  const src = shown ? embedUrl(shown) : null;
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in data-[state=closed]:fade-out" />
+        <Dialog.Overlay className="lightbox-overlay fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm" />
         <Dialog.Content
           dir="rtl"
           // Focus would otherwise land in the iframe, and a cross-origin player swallows
@@ -40,23 +48,24 @@ export function CreativeLightbox({
           onClick={(event) => {
             if (event.target === event.currentTarget) onClose();
           }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 focus:outline-none sm:p-8"
+          className="lightbox-content fixed inset-0 z-[100] flex items-center justify-center p-4 focus:outline-none sm:p-8"
         >
-          <Dialog.Title className="sr-only">{piece?.alt ?? "סרטון"}</Dialog.Title>
+          <Dialog.Title className="sr-only">{shown?.alt ?? "סרטון"}</Dialog.Title>
 
-          {piece && src && (
+          {shown && src && (
             <div
               // Fits the viewport whichever way round the video is: a vertical short is
-              // bounded by the height, a 16:9 by the width.
-              className="max-h-full max-w-full overflow-hidden rounded-xl bg-black shadow-2xl"
-              style={{ aspectRatio: piece.ratio, width: `min(100%, calc((100vh - 8rem) * ${piece.ratio}))` }}
+              // bounded by the height, a 16:9 by the width. dvh, so a phone's address bar
+              // does not push the bottom of the player off screen.
+              className="lightbox-player max-h-full max-w-full overflow-hidden rounded-xl bg-black shadow-2xl"
+              style={{ aspectRatio: shown.ratio, width: `min(100%, calc((100dvh - 8rem) * ${shown.ratio}))` }}
             >
               <iframe
                 // Keyed by the URL so switching pieces mounts a fresh player rather
                 // than leaving the previous video loaded behind the new one.
                 key={src}
                 src={src}
-                title={piece.alt}
+                title={shown.alt}
                 className="block size-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen

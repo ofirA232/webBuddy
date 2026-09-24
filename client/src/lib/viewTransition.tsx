@@ -67,6 +67,8 @@ export function TransitionLink({
   target,
   direction = "forward",
   historyBack = false,
+  replace,
+  state,
   ...rest
 }: TransitionLinkProps) {
   const navigate = useNavigate();
@@ -97,12 +99,13 @@ export function TransitionLink({
     // Jumping to a section of the page we are already on is a scroll, not a page change.
     // Sweeping the whole page for it would promise something that never happens.
     if (pathnameOf(to) === location.pathname) {
-      navigate(to);
+      navigate(to, { replace, state });
       return;
     }
 
-    vtNavigate(to, direction);
+    // The click is handled here rather than by <Link>, so its options are passed on by hand.
+    vtNavigate(to, direction, { replace, state });
   };
 
-  return <Link to={to} target={target} onClick={handleClick} {...rest} />;
+  return <Link to={to} target={target} replace={replace} state={state} onClick={handleClick} {...rest} />;
 }
