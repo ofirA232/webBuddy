@@ -1,22 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { projects, type Project } from "@/data/portfolioData";
+import { CATEGORY_LABELS, projects, type Category, type Project } from "@/data/portfolioData";
 import { EASE_IN_OUT, exitTransition, revealItem } from "@/lib/motion";
 import { TransitionLink } from "@/lib/viewTransition";
 import { ProjectPlaceholder } from "./ProjectPlaceholder";
 import { ResponsiveImage } from "./ResponsiveImage";
 import { Reveal } from "./motion/Reveal";
 
-type Category = Project["categories"][number];
 type Filter = Category | "all";
-
-/** Single source for category names, used by both the filter row and the tags on each card. */
-const CATEGORY_LABELS: Record<Category, string> = {
-  sites: "אתרים",
-  apps: "אפליקציות ומערכות",
-  seo: "SEO",
-};
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "all", label: "הכל" },
@@ -27,11 +19,22 @@ const FILTERS: { id: Filter; label: string }[] = [
  * One project card: a 16:9 media panel with the client mark centred on it,
  * then the name, a one-line tagline and the category tags.
  */
-function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({
+  project,
+  replace,
+  placeholderTone = "dark",
+}: {
+  project: Project;
+  /** Swap the current history entry instead of adding one, as links between projects do. */
+  replace?: boolean;
+  /** Placeholder style for projects without a screenshot; see ProjectPlaceholder. */
+  placeholderTone?: "dark" | "neutral";
+}) {
   return (
     <article>
       <TransitionLink
         to={`/project/${project.slug}`}
+        replace={replace}
         className="group pressable-card block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black"
       >
         <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#141414]">
@@ -46,6 +49,7 @@ function ProjectCard({ project }: { project: Project }) {
           ) : (
             <ProjectPlaceholder
               title={project.title}
+              tone={placeholderTone}
               className="transition-transform duration-300 ease-out-strong can-hover:group-hover:scale-[1.04]"
             />
           )}
